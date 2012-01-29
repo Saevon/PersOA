@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         #'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'ENGINE': 'django.db.backends.sqlite',
+        'ENGINE': 'django.db.backends.sqlite3',
         # Or path to database file if using sqlite3.
         'NAME': 'persoa',
         # Not used with sqlite3.
