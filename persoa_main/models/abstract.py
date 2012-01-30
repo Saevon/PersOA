@@ -1,6 +1,6 @@
 from django.db import models
 
-class AbstractPersOAModel(models):
+class AbstractPersOAModel(models.Model):
     """
     A model made for the PersOA app
     """
