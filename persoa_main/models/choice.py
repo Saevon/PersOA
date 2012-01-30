@@ -47,23 +47,6 @@ class BasicChoice(AbstractChoice):
         })
         return details
 
-class MultiChoice(AbstractChoice):
-    """
-    A standard Choice for multi traits
-    """
-    trait = models.ForeignKey(
-        'MultiTrait',
-        related_name='choices',
-        blank=False,
-        null=False)
-
-    def details(self, *args, **kwargs):
-        details = super(MultiChoice, self).details()
-        details.update({
-            'trait': self.trait,
-        })
-        return details
-
 class LinearChoice(AbstractChoice):
     """
     A choice that is set on a scale
