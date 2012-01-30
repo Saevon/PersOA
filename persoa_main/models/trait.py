@@ -1,6 +1,6 @@
 import json
 
-from persoa_main.constants.database import MAX_CHAR_LENGHT
+from persoa_main.constants.database import MAX_CHAR_LENGTH
 from persoa_main.models.abstract import AbstractPersOAModel
 
 class AbstractTrait(AbstractPersOAModel):
@@ -52,10 +52,10 @@ class LinearTrait(AbstractTrait):
     """
 
     neg_name = models.CharField(
-    	max_length=MAX_CHAR_LENGHT,
+    	max_length=MAX_CHAR_LENGTH,
         blank=False)
     pos_name = models.CharField(
-    	max_length=MAX_CHAR_LENGHT,
+    	max_length=MAX_CHAR_LENGTH,
         blank=False)
 
     def details(self, *args, **kwargs):
