@@ -1,3 +1,4 @@
+from django.db import models
 import json
 
 from persoa_main.constants.database import MAX_CHAR_LENGTH
@@ -16,7 +17,7 @@ class AbstractTrait(AbstractPersOAModel):
         blank=False)
     desc = models.TextField(blank=True)
     defn = models.CharField(
-    	max_length=Max_CHAR_LENGTH,
+    	max_length=MAX_CHAR_LENGTH,
         blank=True)
 
     def generate(self, *args, **kwargs):
