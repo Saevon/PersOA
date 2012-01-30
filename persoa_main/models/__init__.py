@@ -7,7 +7,8 @@ from persoa_main.models.trait import BasicTrait, LinearTrait, MultiTrait
 
 __all__ = [
     BasicChoice,
-    ScaleChoice,
+    LinearChoice,
+    MultiChoice,
     BasicTrait,
     LinearTrait,
     MultiTrait,
