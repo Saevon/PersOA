@@ -1,5 +1,4 @@
 from django.db import models
-import json
 
 from persoa_main.constants.database import MAX_CHAR_LENGTH
 from persoa_main.models.abstract import AbstractPersOAModel
@@ -76,7 +75,7 @@ class MultiTrait(AbstractTrait):
     def_num = models.PositiveSmallIntegerField(blank=False, null=False)
 
     def details(self, *args, **kwargs):
-        details = super(LinearTrait, self).details()
+        details = super(MultiTrait, self).details()
         details.update({
             'type': 'multi_choice',
             'default_num': self.def_num
