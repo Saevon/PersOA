@@ -41,7 +41,7 @@ class BasicChoice(AbstractChoice):
         null=False)
 
     def details(self, *args, **kwargs):
-        details = super(ScaleChoice, self).details()
+        details = super(BasicChoice, self).details()
         details.update({
             'trait': self.trait,
         })
@@ -58,7 +58,7 @@ class MultiChoice(AbstractChoice):
         null=False)
 
     def details(self, *args, **kwargs):
-        details = super(ScaleChoice, self).details()
+        details = super(MultiChoice, self).details()
         details.update({
             'trait': self.trait,
         })
@@ -77,7 +77,7 @@ class LinearChoice(AbstractChoice):
         null=False)
 
     def details(self, *args, **kwargs):
-        details = super(ScaleChoice, self).details()
+        details = super(LinearChoice, self).details()
         details.update({
             'pos': self.side,
             'trait': self.trait,
