@@ -34,17 +34,52 @@ class BasicChoice(AbstractChoice):
     """
     A standard Choice
     """
+    trait = models.ForeignKey(
+        'BasicTrait',
+        related_name='choices',
+        blank=False,
+        null=False)
 
-class ScaleChoice(AbstractChoice):
+    def details(self, *args, **kwargs):
+        details = super(ScaleChoice, self).details()
+        details.update({
+            'trait': self.trait,
+        })
+        return details
+
+class MultiChoice(AbstractChoice):
+    """
+    A standard Choice
+    """
+    trait = models.ForeignKey(
+        'MultiTrait',
+        related_name='choices',
+        blank=False,
+        null=False)
+
+    def details(self, *args, **kwargs):
+        details = super(ScaleChoice, self).details()
+        details.update({
+            'trait': self.trait,
+        })
+        return details
+
+class LinearChoice(AbstractChoice):
     """
     A choice that is set on a scale
     """
 
     side = models.SmallIntegerField(blank=False, null=False)
+    trait = models.ForeignKey(
+        'LinearTrait',
+        related_name='choices',
+        blank=False,
+        null=False)
 
     def details(self, *args, **kwargs):
         details = super(ScaleChoice, self).details()
         details.update({
-            'pos': self.side
+            'pos': self.side,
+            'trait': self.trait,
         })
         return details
