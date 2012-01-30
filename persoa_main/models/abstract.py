@@ -7,4 +7,4 @@ class AbstractPersOAModel(models):
 
     class Meta:
         abstract = True
-        app_label = 'persoa'
+        app_label = 'persoa_main'
