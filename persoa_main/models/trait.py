@@ -43,16 +43,18 @@ class AbstractTrait(AbstractPersOAModel):
 
 class BasicTrait(AbstractTrait):
     """
-    A trait which has a list of choices
+    A trait which has a list of choices, and is chosen X times
     """
+
+    default_num = models.PositiveSmallIntegerField(blank=False, null=False)
 
     def details(self, *args, **kwargs):
         details = super(BasicTrait, self).details(*args, **kwargs)
         details.update({
             'type': 'basic',
+            'default_num': self.def_num
         })
         return details
-
 
 class LinearTrait(AbstractTrait):
     """
@@ -72,20 +74,5 @@ class LinearTrait(AbstractTrait):
             'type': 'scale',
             'neg': self.neg_name,
             'pos': self.pos_name,
-        })
-        return details
-
-class MultiTrait(AbstractTrait):
-    """
-    A trait which can be selected multiple times
-    """
-
-    def_num = models.PositiveSmallIntegerField(blank=False, null=False)
-
-    def details(self, *args, **kwargs):
-        details = super(MultiTrait, self).details()
-        details.update({
-            'type': 'multi_choice',
-            'default_num': self.def_num
         })
         return details

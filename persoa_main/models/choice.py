@@ -49,7 +49,7 @@ class BasicChoice(AbstractChoice):
 
 class MultiChoice(AbstractChoice):
     """
-    A standard Choice
+    A standard Choice for multi traits
     """
     trait = models.ForeignKey(
         'MultiTrait',
