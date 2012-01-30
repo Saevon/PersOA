@@ -1,3 +1,10 @@
 from django.db import models
 
-# Create your models here.
+class AbstractPersOAModel(models):
+    """
+    A model made for the PersOA app
+    """
+
+    class Meta:
+        abstract = True
+        app_label = 'persoa'
