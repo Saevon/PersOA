@@ -46,6 +46,14 @@ class BasicTrait(AbstractTrait):
     A trait which has a list of choices
     """
 
+    def details(self, *args, **kwargs):
+        details = super(BasicTrait, self).details(*args, **kwargs)
+        details.update({
+            'type': 'basic',
+        })
+        return details
+
+
 class LinearTrait(AbstractTrait):
     """
     A trait with its choices on a scale
