@@ -30,7 +30,7 @@ class TraitGroup(AbstractPersOAModel):
     	return unicode(self.name)
 
     @property
-    def traits(self)):
+    def traits(self):
         """"
         Combines the list of Traits
         """
