@@ -19,16 +19,32 @@ class AbstractChoice(AbstractPersOAModel):
     	max_length=MAX_CHAR_LENGTH,
         blank=True)
 
-    def details(self, *args, **kwargs):
+    def generate(self, *args, **kwargs):
+        """
+        Returns a choice from this trait
+        """
+        return NotImplemented
+
+    def details(self, include=None):
         """
         Returns a dict with the choice's details
         """
-        details = {
+        details = self.data()
+        if include is not None and 'traits' in include:
+            details.update({
+                'trait': self.trait.data(),
+            })
+        return details
+
+    def data(self):
+        """
+        Returns a dict with the basic details
+        """
+        return {
             'name': self.name,
             'desc': self.desc,
             'defn': self.defn,
         }
-        return details
 
 class BasicChoice(AbstractChoice):
     """
@@ -39,13 +55,6 @@ class BasicChoice(AbstractChoice):
         related_name='choices',
         blank=False,
         null=False)
-
-    def details(self, *args, **kwargs):
-        details = super(BasicChoice, self).details()
-        details.update({
-            'trait': self.trait,
-        })
-        return details
 
 class LinearChoice(AbstractChoice):
     """
@@ -59,10 +68,9 @@ class LinearChoice(AbstractChoice):
         blank=False,
         null=False)
 
-    def details(self, *args, **kwargs):
-        details = super(LinearChoice, self).details()
+    def data(self):
+        details = super(LinearChoice, self).data()
         details.update({
             'pos': self.side,
-            'trait': self.trait,
         })
         return details

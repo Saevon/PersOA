@@ -13,7 +13,8 @@ class AbstractTrait(AbstractPersOAModel):
 
     name = models.CharField(
     	max_length=MAX_CHAR_LENGTH,
-        blank=False)
+        blank=False,
+        unique=True)
     desc = models.TextField(blank=True)
     defn = models.CharField(
     	max_length=MAX_CHAR_LENGTH,
@@ -25,21 +26,33 @@ class AbstractTrait(AbstractPersOAModel):
         """
         return NotImplemented
 
-    def details(self, *args, **kwargs):
+    def details(self, include=None):
         """
         Returns a dict with the trait's details
         """
-        details = {
-            'type': NotImplemented,
+        details = self.data()
+        if include is not None:
+            if 'choices' in include:
+                include.remove('choices')
+                details.update({
+                    'choices': [choice.details(include=include) for choice in self.choices],
+                })
+            if 'groups' in include:
+                details.update({
+                    'groups': [group.data() for group in self.groups],
+                })
+        return details
+
+    def data(self):
+        """
+        Returns a dict with the basic details
+        """
+        return {
+            'type': None,
             'name': self.name,
             'desc': self.desc,
             'defn': self.defn,
         }
-        includes = kwargs.get('includes', None)
-        if includes != None and 'choices' in includes:
-            choices = [choice.details()]
-            details.update({'choices': choices})
-        return details
 
 class BasicTrait(AbstractTrait):
     """
@@ -48,8 +61,8 @@ class BasicTrait(AbstractTrait):
 
     default_num = models.PositiveSmallIntegerField(blank=False, null=False)
 
-    def details(self, *args, **kwargs):
-        details = super(BasicTrait, self).details(*args, **kwargs)
+    def data(self):
+        details = super(BasicTrait, self).data()
         details.update({
             'type': 'basic',
             'default_num': self.def_num
@@ -68,8 +81,8 @@ class LinearTrait(AbstractTrait):
     	max_length=MAX_CHAR_LENGTH,
         blank=False)
 
-    def details(self, *args, **kwargs):
-        details = super(LinearTrait, self).details(*args, **kwargs)
+    def data(self):
+        details = super(LinearTrait, self).data()
         details.update({
             'type': 'scale',
             'neg': self.neg_name,
