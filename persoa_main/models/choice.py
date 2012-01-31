@@ -13,7 +13,8 @@ class AbstractChoice(AbstractPersOAModel):
 
     name = models.CharField(
     	max_length=MAX_CHAR_LENGTH,
-        blank=False)
+        blank=False,
+        unique=True)
     desc = models.TextField(blank=True)
     defn = models.CharField(
     	max_length=MAX_CHAR_LENGTH,

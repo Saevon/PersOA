@@ -12,7 +12,8 @@ class TraitGroup(AbstractPersOAModel):
 
     name = models.CharField(
     	max_length=MAX_CHAR_LENGTH,
-        blank=False)
+        blank=False,
+        unique=True)
     desc = models.TextField(blank=True)
     basic_traits = models.ManyToManyField(
         'BasicTrait',
