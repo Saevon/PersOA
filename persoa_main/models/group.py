@@ -26,6 +26,9 @@ class TraitGroup(AbstractPersOAModel):
         blank=True,
         null=True)
 
+    def __unicode__(self):
+    	return unicode(self.name)
+
     @property
     def traits(self)):
         """"

@@ -20,6 +20,9 @@ class AbstractTrait(AbstractPersOAModel):
     	max_length=MAX_CHAR_LENGTH,
         blank=True)
 
+    def __unicode__(self):
+        return unicode(self.name)
+
     def generate(self, *args, **kwargs):
         """
         Returns a choice from this trait
