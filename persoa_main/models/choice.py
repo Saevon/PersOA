@@ -23,11 +23,11 @@ class AbstractChoice(AbstractPersOAModel):
     def __unicode__(self):
         return unicode(self.name)
 
-    def generate(self, *args, **kwargs):
+    def generated_data(self):
         """
-        Returns a choice from this trait
+        Returns data that is shown if this was generate
         """
-        return NotImplemented
+        return self.name
 
     def details(self, include=None):
         """

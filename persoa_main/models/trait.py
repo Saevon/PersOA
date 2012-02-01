@@ -23,7 +23,7 @@ class AbstractTrait(AbstractPersOAModel):
     def __unicode__(self):
         return unicode(self.name)
 
-    def generate(self, *args, **kwargs):
+    def generate(self, seed=None):
         """
         Returns a choice from this trait
         """
@@ -36,9 +36,8 @@ class AbstractTrait(AbstractPersOAModel):
         details = self.data()
         if include is not None:
             if 'choices' in include:
-                include.remove('choices')
                 details.update({
-                    'choices': [choice.details(include=include) for choice in self.choices],
+                    'choices': [choice.data() for choice in self.choices],
                 })
             if 'groups' in include:
                 details.update({
