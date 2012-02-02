@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from persoa_main.models.choice import BasicChoice, LinearChoice
+from persoa_main.models.groups import TraitGroup
 from persoa_main.models.trait import BasicTrait, LinearTrait
 
 class BasicChoiceInline(admin.TabularInline):
@@ -38,3 +39,4 @@ admin.site.register(LinearChoice)
 admin.site.register(BasicChoice)
 admin.site.register(BasicTrait, BasicTraitAdmin)
 
+admin.site.register(TraitGroup)
