@@ -1,9 +1,16 @@
+from django.http import HttpResponse
+import simplejson
 
-def full(request, poll_id):
-    pass
+def full(request):
+    response = HttpResponse(mimetype='application/json')
+    response.content = simplejson.dump(data)
+    return response
 
-def group(request, poll_id):
-    pass
+def group(request):
+    response = HttpResponse(mimetype='application/json')
+    response.content = simplejson.dump(data)
+    return response
 
-def trait(request, poll_id):
-    pass
+def trait(request):
+    response = HttpResponse(mimetype='application/json')
+    response.content = simplejson.dump(data)

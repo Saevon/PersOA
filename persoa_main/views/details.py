@@ -1,9 +1,18 @@
+from django.http import HttpResponse
+import simplejson
 
-def groups(request, poll_id):
-    pass
+def trait_groups(request):
+    response = HttpResponse(mimetype='application/json')
+    response.content = simplejson.dump(data)
+    return response
 
-def traits(request, poll_id):
-    pass
+def traits(request):
+    response = HttpResponse(mimetype='application/json')
+    response.content = simplejson.dump(data)
+    return response
 
-def choices(request, poll_id):
-    pass
+def choices(request):
+    response = HttpResponse(mimetype='application/json')
+    response.content = simplejson.dump(data)
+    return response
+
