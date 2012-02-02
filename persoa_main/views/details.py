@@ -17,7 +17,6 @@ def traits(request):
 @require_GET
 def choices(request):
     response = HttpResponse(mimetype='application/json')
-    data = {'a':request.GET}
     simplejson.dump(request.GET, response)
     return response
 
