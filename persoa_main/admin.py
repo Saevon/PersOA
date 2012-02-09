@@ -44,7 +44,7 @@ class BasicChoiceAdmin(admin.ModelAdmin):
         (None, {'fields': ['name', 'defn']}),
         (None, {'fields': ['desc']}),
     ]
-    inlines = SubChoiceInline
+    inlines = [SubChoiceInline]
 
 class LinearChoiceAdmin(admin.ModelAdmin):
     fieldsets = [
