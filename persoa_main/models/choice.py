@@ -12,12 +12,12 @@ class AbstractChoice(AbstractPersOAModel):
         abstract = True
 
     name = models.CharField(
-    	max_length=MAX_CHAR_LENGTH,
+        max_length=MAX_CHAR_LENGTH,
         blank=False,
         unique=True)
     desc = models.TextField(blank=True)
     defn = models.CharField(
-    	max_length=MAX_CHAR_LENGTH,
+        max_length=MAX_CHAR_LENGTH,
         blank=True)
 
     def __unicode__(self):
@@ -78,3 +78,21 @@ class LinearChoice(AbstractChoice):
             'pos': self.side,
         })
         return details
+
+class SubChoice(AbstractPersOAModel):
+    """
+    A secondary level of a choice
+    """
+
+    name = models.CharField(
+        max_length=MAX_CHAR_LENGTH,
+        blank=False,
+        unique=True)
+    defn = models.CharField(
+        max_length=MAX_CHAR_LENGTH,
+        blank=True)
+    choice = models.ForeignKey(
+        'BasicChoice',
+        related_name='sub_choices',
+        blank=False,
+        null=False)

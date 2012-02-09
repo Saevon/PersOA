@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from persoa_main.models.choice import BasicChoice, LinearChoice
+from persoa_main.models.choice import BasicChoice, LinearChoice, SubChoice
 from persoa_main.models.group import TraitGroup
 from persoa_main.models.trait import BasicTrait, LinearTrait
 
@@ -37,6 +37,7 @@ admin.site.register(LinearTrait, LinearTraitAdmin)
 admin.site.register(LinearChoice)
 
 admin.site.register(BasicChoice)
+admin.site.register(SubChoice)
 admin.site.register(BasicTrait, BasicTraitAdmin)
 
 admin.site.register(TraitGroup)
