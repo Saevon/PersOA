@@ -18,8 +18,8 @@ def traits(request):
 
 CHOICE_TYPES = ['basic', 'linear'];
 
-def is_str(val):
-    return isinstance(val, str)
+def is_str(other, val):
+    return isinstance(val, basestring) and other
 
 @require_GET
 def choices(request):
@@ -27,20 +27,20 @@ def choices(request):
         [
             ['choice_name', 'name'],
             'name',
-            str,
+            basestring,
             None,
         ],
         [
             ['choice_type', 'type'],
             'type',
-            str,
+            basestring,
             None,
             lambda val: (val in CHOICE_TYPES),
         ],
         [
             ['trait', 'trait_name'],
             'trait',
-            str,
+            basestring,
             None,
         ],
         [
@@ -48,7 +48,7 @@ def choices(request):
             'include',
             list,
             None,
-            lambda val: (reduce(is_str, val, False)),
+            lambda val: (reduce(is_str, val, True)),
         ],
     ]]
 

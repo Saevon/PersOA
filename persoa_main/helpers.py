@@ -12,6 +12,7 @@ def extract(params, whitelist):
 
     for field in whitelist:
         valid = field.val(params)
+        final[field.get_name()] = valid
     return final
 
 def cascade(func):
@@ -29,10 +30,13 @@ class Field(object):
 
         # defaults
         self._default = None
-        self._validator = lambda val: True
+        self._validate = lambda val: True
 
     def val(self, params):
         return self._first_valid(params)
+
+    def get_name(self):
+        return self._name
 
     @cascade
     def default(self, default):
@@ -44,10 +48,11 @@ class Field(object):
 
     def _first_valid(self, params):
         for key in self._keys:
+            val = params.get(key)
+            if val is None:
+                continue
             try:
-                val = simplejson.loads(
-                    params.get(key)
-                )
+                val = simplejson.loads(val)
             except simplejson.JSONDecodeError:
                 continue
             # Make sure that only a valid type is returned"""
