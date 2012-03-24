@@ -2,6 +2,7 @@ from django.views.decorators.http import require_GET
 from django.http import HttpResponse
 import simplejson
 
+from helpers.decorators import cascade
 from persoa_main.helpers import extract, field
 
 @require_GET

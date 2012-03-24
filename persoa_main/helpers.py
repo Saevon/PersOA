@@ -15,12 +15,6 @@ def extract(params, whitelist):
         final[field.get_name()] = valid
     return final
 
-def cascade(func):
-    def wrapper(self, *args, **kwargs):
-        func(self, *args, **kwargs)
-        return self
-    return wrapper
-
 class Field(object):
 
     def __init__(self, keys, name, form=str):
