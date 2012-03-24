@@ -4,19 +4,19 @@ from helpers import decorators
 class Foo(object):
     """Class to test the cascade decorator"""
     def __init__(self):
-        self.count = 0
+        self.counter = 0
 
     @decorators.cascade
     def set_val(self, val):
         self.val = val
-        self.count += 1
+        self.counter += 1
 
     @decorators.cascade
     def count(self, val):
-        self.count += val + 1
+        self.counter = self.counter + val + 1
 
     def get_count(self):
-        return self.count
+        return self.counter
 
 class TestCascade(unittest.TestCase):
 

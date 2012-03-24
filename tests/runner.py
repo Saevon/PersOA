@@ -2,7 +2,9 @@
 # PersOA.tests module
 # See carljm.github.com/django-testing-slides/#9
 
-from django.test.simple import DjangoTestSuiteRunner
+import settings
+from django.test.simple import DjangoTestSuiteRunner, reorder_suite
+from django.utils import unittest
 
 class DiscoveryRunner(DjangoTestSuiteRunner):
     """
@@ -14,11 +16,12 @@ class DiscoveryRunner(DjangoTestSuiteRunner):
         discovery_root = settings.TEST_DISCOVERY_ROOT
 
         if test_labels:
-            suite = defaultTestLoader.loadTestsFromNames(
+            # TODO: make this find all sub-tests
+            suite = unittest.defaultTestLoader.loadTestsFromNames(
                 test_labels)
 
         if suite is None:
-            suite = defaultTestLoader.discover(
+            suite = unittest.defaultTestLoader.discover(
                 discovery_root,
                 top_level_dir=settings.BASE_PATH,
             )
@@ -27,4 +30,4 @@ class DiscoveryRunner(DjangoTestSuiteRunner):
             for test in extra_tests:
                 suite.addTest(test)
 
-        return reorder_suite(suite, (TestCase,))
+        return reorder_suite(suite, (unittest.TestCase,))

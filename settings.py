@@ -4,7 +4,7 @@ import os.path
 
 # Test discoverer, finds and runs all tests in the
 # 'test/ folder
-BASE_PATH = os.path.dirname(os.path.dirname(__file__))
+BASE_PATH = os.path.dirname(__file__)
 TEST_DISCOVERY_ROOT = os.path.join(BASE_PATH, "tests")
 TEST_RUNNER = "tests.runner.DiscoveryRunner"
 

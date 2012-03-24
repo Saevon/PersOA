@@ -19,4 +19,4 @@ help:
 .PHONY: test
 
 test:
-	TEST persoa_main
+	TEST
