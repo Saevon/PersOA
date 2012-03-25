@@ -1,7 +1,7 @@
 
 # Make sure to show deprecation warnings
-TEST_FLAGS="-Wall"
-TEST="python $(TEST_FLAGS) manage.py test"
+TEST_FLAGS=-Wall
+TEST=python $(TEST_FLAGS) manage.py test
 
 
 #
@@ -19,4 +19,4 @@ help:
 .PHONY: test
 
 test:
-	TEST
+	$(TEST)
