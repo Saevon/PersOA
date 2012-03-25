@@ -27,7 +27,7 @@ def allow_list(pos, name=None):
                 args = list(args)
                 source = args
                 key = pos
-            elif name is not None && kwargs.has_key(name):
+            elif name is not None and kwargs.has_key(name):
                 source = kwargs
                 key = name
             else:

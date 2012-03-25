@@ -51,7 +51,7 @@ class TestAllowList(unittest.TestCase):
         func = decorators.allow_list(0)(add_one)
 
         func(self.attr, 'sec')
-        self.assertEquals(self.attr['sec'], 2)
+        self.assertEquals(self.attr['sec'], 1)
         func(self.params, 'main')
         self.assertEquals(self.params['main'], 1)
 
@@ -71,7 +71,7 @@ class TestAllowList(unittest.TestCase):
         self.assertEquals(self.attr['main'], 2)
 
     def test_key_arg__list(self):
-        func = decorators.allow_list(1, 'field')(add_one))
+        func = decorators.allow_list(1, 'field')(add_one)
 
         func(self.attr, ['main', 'sec', 'main'])
         self.assertEquals(self.attr['main'], 2)
