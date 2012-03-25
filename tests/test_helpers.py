@@ -23,7 +23,7 @@ class TestCascade(unittest.TestCase):
     def setUp(self):
         self.foo = Foo()
 
-    def test_cascade(self):
+    def test_basic(self):
         out = (self.foo.set_val(3)
             .count(4)
             .count(5)
@@ -31,3 +31,51 @@ class TestCascade(unittest.TestCase):
 
         self.assertEqual(out, self.foo)
         self.assertEqual(out.get_count(), 12)
+
+
+def add_one(dictionary, field):
+    dictionary[field] += 1
+
+class TestAllowList(unittest.TestCase):
+
+    def setUp(self):
+        self.params = {'main': 0, 'sec': 0}
+        self.attr = {'main': 0, 'sec': 0}
+
+    def test_pos_arg__single(self):
+        func = decorators.allow_list(1)(add_one)
+
+        func(self.attr, 'main')
+        self.assertEquals(self.attr['main'], 1)
+
+        func = decorators.allow_list(0)(add_one)
+
+        func(self.attr, 'sec')
+        self.assertEquals(self.attr['sec'], 2)
+        func(self.params, 'main')
+        self.assertEquals(self.params['main'], 1)
+
+    def test_pos_arg__list(self):
+        func = decorators.allow_list(1)(add_one)
+
+        func(self.attr, ['main', 'sec', 'main'])
+        self.assertEquals(self.attr['main'], 2)
+        self.assertEquals(self.attr['sec'], 1)
+
+    def test_key_arg__single(self):
+        func = decorators.allow_list(1, 'field')(add_one)
+
+        func(self.attr, 'main')
+        self.assertEquals(self.attr['main'], 1)
+        func(self.attr, field='main')
+        self.assertEquals(self.attr['main'], 2)
+
+    def test_key_arg__list(self):
+        func = decorators.allow_list(1, 'field')(add_one))
+
+        func(self.attr, ['main', 'sec', 'main'])
+        self.assertEquals(self.attr['main'], 2)
+        self.assertEquals(self.attr['sec'], 1)
+        func(self.attr, field=['main', 'sec', 'main'])
+        self.assertEquals(self.attr['main'], 4)
+        self.assertEquals(self.attr['sec'], 2)
