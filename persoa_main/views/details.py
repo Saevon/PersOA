@@ -3,7 +3,7 @@ from django.http import HttpResponse
 import simplejson
 
 from helpers.decorators import cascade
-from persoa_main.helpers import extract, field
+from persoa_main.helpers import extract, field, IncludeField
 
 @require_GET
 def trait_groups(request):
@@ -26,31 +26,25 @@ def is_str(other, val):
 def choices(request):
     whitelist = [field(*item) for item in [
         [
-            ['choice_name', 'name'],
             'name',
+            ['choice_name', 'name'],
             basestring,
             None,
         ],
         [
-            ['choice_type', 'type'],
             'type',
+            ['choice_type', 'type'],
             basestring,
             None,
             lambda val: (val in CHOICE_TYPES),
         ],
         [
-            ['trait', 'trait_name'],
             'trait',
+            ['trait', 'trait_name'],
             basestring,
             None,
         ],
-        [
-            ['include'],
-            'include',
-            list,
-            None,
-            lambda val: (reduce(is_str, val, True)),
-        ],
+        IncludeField(['trait'])
     ]]
 
     params = extract(request.GET, whitelist)
