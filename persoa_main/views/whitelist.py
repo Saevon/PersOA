@@ -3,10 +3,13 @@ from helpers.decorators import allow_list, cascade
 
 class Whitelist(object):
 
-    INCLUDE = 'include'
+    INCLUDE_NAME = 'include'
+    INCLUDE_KEYS = ['include']
 
     def __init__(self):
-        self._whitelist = {Whitelist.INCLUDE: IncludeField([])}
+        self._whitelist = {
+            Whitelist.INCLUDE_NAME: Field
+        }
         self._required = set()
         self._optional = defaultdict(list)
         self._errors = []
