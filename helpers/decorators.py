@@ -1,12 +1,14 @@
 """
 Useful decorators
 """
+from functools import wraps
 
 def cascade(func):
     """
     class method decorator, always returns the
     object that called the method
     """
+    @wraps(func)
     def wrapper(self, *args, **kwargs):
         func(self, *args, **kwargs)
         return self
@@ -21,6 +23,7 @@ def allow_list(pos, name=None):
     This changes the function to always return void
     """
     def decorator(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             if len(args) > pos:
                 # args is normally an immutable tuple
