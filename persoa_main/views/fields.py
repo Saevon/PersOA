@@ -1,29 +1,104 @@
 import simplejson
 
 class Field(object):
+    """
+    An input Field which can read a dict and transform the
+    data in it into a proper form for this field
+    """
 
-    def __init__(self, keys, name, form=str):
-        self._keys = keys
+    __type_checkers = dict()
+
+    # Special settings for a field
+    # TODO: currently if you combine LIST and LIMIT all items in the list
+    # must be part of the given choices otherwise the whole list fails
+    SETTINGS_LIST = 'list'
+    SETTINGS_LIMIT = 'limit'
+
+    def __init__(self, keys, name, cls=basestring):
+        """
+        keys -- A list of input keys that are read
+        name -- A str representing the name of this field
+        cls  -- (OPTIONAL) The type of input that is expected
+        """
+        self._keys = set(keys)
         self._name = name
-        self._type = form
+
+        self._settings = set()
 
         # defaults
-        self._default = None
-        self._validate = lambda val: True
+        self._default = KeyError
+        self._validators = [Field.type_checker(cls)]
 
-    def val(self, params):
-        return self._first_valid(params)
+    @staticmethod
+    def type_checker(cls):
+        """
+        Returns a comparison function
+        """
+        cache_key = cls
+        if not Field.__type_checkers.has_key(cache_key):
+            Field.__type_checkers[cache_key] =
+                lambda val: isinstance(val, cls)
+        return Field.__type_checkers[cache_key]
 
-    def get_name(self):
-        return self._name
+    @cascade
+    @allow_list(1, 'setting')
+    def setting(self, setting):
+        """
+        Enables a Field setting
+        """
+        self._setting.add(setting)
+        if setting == Field.SETTINGS_LIMIT:
+            self._limit = set()
+            self.validator(lambda val: (val in self._limit))
+
+    @cascade
+    @allow_list(1, 'choice')
+    def choice(self, choice):
+        """
+        If the LIMIT setting is disabled enables it
+        Also adds choice to the possible choices for this field
+        """
+        if not Field.SETTINGS_LIMIT in self._settings:
+            self.setting(Field.SETTINGS_LIMIT)
+        self._limit.add(choice)
 
     @cascade
     def default(self, default):
+        """
+        Sets the default that is returned if this field can't find a value
+        If the default is a subclass of Exception, the default is raised instead
+        """
         self._default = default
 
     @cascade
+    @allow_list(1, 'key')
+    def key(self, key):
+        """
+        Adds a new input field to read from
+        """
+        self._keys.add(key)
+
+    @cascade
+    @allow_list(1, 'func')
     def validator(self, func):
-        self._validate = func
+        """
+        Adds a new validation function which requires the form:
+            (val) -> bool
+        """
+        self._validators.append(func)
+
+    def get_name(self):
+        """
+        Returns the name of the field
+        """
+        return self._name
+
+    def val(self, params):
+        """
+        Calculates the value of the field from the dict params
+        Returning the calculated value
+        """
+        return self._first_valid(params)
 
     def _first_valid(self, params):
         for key in self._keys:
@@ -34,57 +109,31 @@ class Field(object):
                 val = simplejson.loads(val)
             except simplejson.JSONDecodeError:
                 continue
-            # Make sure that only a valid type is returned"""
-            if (val is not None and self._check_type(val)
-            and self._validate(val)):
+
+            # Make sure that only a valid type is returned
+            if !Field.SETTINGS_LIST in self._settings:
+                val = list(val)
+            # Check every single value for validity
+            valid = True
+            for value in val:
+                valid = self._validate_cal(val) and valid
+                # optimize by breaking out at first False
+                if not valid:
+                    break
+            if valid:
                 return val
+
+        # Since nothing was found the default applies
+        if isinstance(self._default, BaseException):
+            raise self._default
         return self._default
 
-    def _check_type(self, val):
-        return isinstance(val, self._type)
-
-class IncludeField(Field):
-    """
-    A field for includes
-    """
-
-    NAME= 'include'
-    KEYS = ['include']
-
-    def __init__(self, choices):
-        Field.__init__(self, Field.KEYS, Field.NAME, list)
-        self._limit = set(choices)
-        self._validate = IncludeField.validate
-
-    @classmethod
-    def validate(val):
-        # TODO: if one include fails they all fail?
-        # I need to fix that
-        def allowed(val):
-            return (
-                isinstance(val, basestring)
-                and val in self._limit
-            )
-        return (
-            isinstance(val, list)
-            and filter(allowed, val)
-        )
-
-    @cascade
-    def include(choice):
-        self._limit.add(choice)
-
-def field(name, keys=None, form=str, default=None, validator=None):
-    # This is already a Field
-    if isinstance(name, Field):
-        return name
-
-    new = Field(**{
-        'keys': keys,
-        'name': name,
-        'form':  form,
-    }).default(default)
-    if validator is not None:
-        new.validator(validator)
-
-    return new
+    def _validate_val(self, val):
+        """
+        Runs all the validators on the val
+        Returns a bool success value
+        """
+        for validator in self._validators:
+            if not validator(val):
+                return False
+        return True
