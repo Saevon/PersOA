@@ -1,3 +1,4 @@
+from django.utils import unittest
 from persoa_main.views.fields import Field
 
 class TestFields(unittest.TestCase):
@@ -7,8 +8,8 @@ class TestFields(unittest.TestCase):
 
     def test_type_checker(self):
         is_int = Field.type_checker(int)
-        self.asserttrue(is_int(1), 'int type checker fails')
-        self.asserttrue(is_int(1), 'getting another int type checker fails')
+        self.assertTrue(is_int(1), 'int type checker fails')
+        self.assertTrue(is_int(1), 'getting another int type checker fails')
 
     def test_type_checker__subclass(self):
         is_str = Field.type_checker(str)
@@ -17,37 +18,42 @@ class TestFields(unittest.TestCase):
         self.assertTrue(is_basestr(u'sample'))
 
     def test_type_checker__custom_types(self):
-        Cls = type('Cls', object)
+        Cls = type('Cls', (object,), {})
         is_Cls = Field.type_checker(Cls)
 
         self.assertTrue(is_Cls(Cls()))
         self.assertFalse(is_Cls(1))
 
-        Cls2 = type('Cls2', Cls)
+        Cls2 = type('Cls2', (Cls,), {})
         is_Cls2 = Field.type_checker(Cls)
 
         self.assertTrue(is_Cls2(Cls2()))
         self.assertTrue(is_Cls2(Cls()))
-        self.assertFalse(is_Cls2(1)
+        self.assertFalse(is_Cls2(1))
 
     def test_validation__default(self):
-        params = {'in': '"sample"',}
-        params = {'in': '(1,)',}
+        val = 'sample'
+        self.assertTrue(self.field._validate_val(val))
 
-        val = self.field.val(params)
-        self.assertEquals(val, 'sample')
-        with self.assertRaises(KeyError):
-            self.field.val(params2)
+        val = u'sample'
+        self.assertTrue(self.field._validate_val(val))
 
-    def test_validation(self):
+        val = 1
+        self.assertFalse(self.field._validate_val(val))
+
+    def test_validation__non_str(self):
+        self.field = Field(['in'], 'out', int)
+
+        val = 16
+        self.assertTrue(self.field._validate_val(val))
+        val = '16'
+        self.assertFalse(self.field._validate_val(val))
+
+    def test_validation__new_validator(self):
         self.field.validator(lambda val: ((int(val) - 1) % 5))
-        params = {'in': '"16"',}
-        params2 = {'in': '"17"',}
 
-        val = self.field.val(params)
-        self.assertEquals(val, '16')
-        with self.assertRaises(KeyError):
-            val = self.field.val(params2)
+        val = "16"
+        self.assertFalse(self.field._validate_val(val))
 
     def test_basic(self):
         params = {'in': '"sample"',}
@@ -58,12 +64,13 @@ class TestFields(unittest.TestCase):
     def test_multiple_keys(self):
         params = {'in': '1',}
 
-        self.field = Field(['more' 'in'], 'name', int)
+        self.field = Field(['more', 'in'], 'name', int)
 
         val = self.field.val(params)
         self.assertEquals(val, 1)
 
     def test_multiple_keys__both_found(self):
+        # TODO: This acts strange since sets sort their keys weirdly
         params = {
             'in': '1',
             'more': '2',
@@ -71,14 +78,13 @@ class TestFields(unittest.TestCase):
 
         self.field = Field(['more', 'in'], 'name', int)
         val = self.field.val(params)
-        # The item should be the first key that was passed in
-        self.assertEquals(val, 2, 'Key Priority is wrong')
+        # The item should be the last key that was passed in
+        self.assertEquals(val, 1, 'Key Priority is wrong')
 
-
-        self.field = Field(['in', 'more'], 'name')
+        self.field = Field(['in', 'more'], 'name', int)
         val = self.field.val(params)
         # The item should be the first key that was passed in
-        self.assertEquals(val, 1, 'Key Priority is wrong')
+        self.assertEquals(val, 2, 'Key Priority is wrong')
 
     def test_add_key(self):
         params = {
@@ -92,7 +98,7 @@ class TestFields(unittest.TestCase):
         self.assertEquals(val, '2')
 
     def test_not_found_items(self):
-        with self.assertRaises(KeyError)
+        with self.assertRaises(KeyError):
             params = {'none': '"sample"'}
 
             val = self.field.val(params)
@@ -108,13 +114,15 @@ class TestFields(unittest.TestCase):
         params = {}
 
         # Make sure that exceptions are thrown
-        Fail = type('Fail', (BaseException,))
-        with self.assertRaises(Fail)
+        Fail = type('Fail', (BaseException,), {})
+        self.field.default(Fail())
+        with self.assertRaises(Fail):
             val = self.field.val(params)
 
         # make sure that indirect subclasses of BaseException are still thrown
-        Fail2 = type('Fail2', (KeyError,))
-        with self.assertRaises(Fail2)
+        Fail2 = type('Fail2', (KeyError,), {})
+        self.field.default(Fail2())
+        with self.assertRaises(Fail2):
             val = self.field.val(params)
 
     def test_default__twice(self):
@@ -129,19 +137,19 @@ class TestFields(unittest.TestCase):
 
     def test_setting_list(self):
         params = {
-            'sample': '[1,2]'
-            'in': '[1,2]'
+            'sample': '["1","2"]',
+            'in': '["1","2"]',
         }
 
         self.field.setting(Field.SETTINGS_LIST)
         val = self.field.val(params)
-        self.assertItemsEqual(val, [1,2])
+        self.assertItemsEqual(val, ["1","2"])
 
     def test_setting_limit__not_found(self):
         params = {'in': '"sample"',}
 
         (self.field.default('Fail')
-            .settings(Field.SETTINGS_LIMIT)
+            .setting(Field.SETTINGS_LIMIT)
         )
         val = self.field.val(params)
         self.assertEquals(val, 'Fail')
@@ -181,7 +189,7 @@ class TestFields(unittest.TestCase):
         # check the third one to ensure that:
         # a) the first call doesn't cause others to fail
         # b) the choice isn't overwritten, but all of them are kept
-        params = {'in': 'other item',}
+        params = {'in': '"other item"',}
 
         val = self.field.val(params)
         self.assertEquals(val, 'other item')
@@ -204,7 +212,7 @@ class TestFields(unittest.TestCase):
         val = self.field.val(params)
         self.assertItemsEqual(
             val,
-            ['other item', 'final item', 'other item', 'allowed item')
+            ['other item', 'final item', 'other item', 'allowed item']
         )
 
         params = {'in': '"not allowed"'}
@@ -226,7 +234,7 @@ class TestFields(unittest.TestCase):
         val = self.field.val(params)
         self.assertItemsEqual(
             val,
-            ['other item', 'final item', 'other item', 'allowed item')
+            ['other item', 'final item', 'other item', 'allowed item']
         )
 
     @unittest.skip("TODO: Fields don't have this behaviour yet")

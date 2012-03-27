@@ -1,4 +1,5 @@
 import simplejson
+from helpers.decorators import allow_list, cascade
 
 class Field(object):
     """
@@ -26,7 +27,7 @@ class Field(object):
         self._settings = set()
 
         # defaults
-        self._default = KeyError
+        self._default = KeyError()
         self._validators = [Field.type_checker(cls)]
 
     @staticmethod
@@ -36,8 +37,7 @@ class Field(object):
         """
         cache_key = cls
         if not Field.__type_checkers.has_key(cache_key):
-            Field.__type_checkers[cache_key] =
-                lambda val: isinstance(val, cls)
+            Field.__type_checkers[cache_key] = lambda val: isinstance(val, cls)
         return Field.__type_checkers[cache_key]
 
     @cascade
@@ -46,7 +46,7 @@ class Field(object):
         """
         Enables a Field setting
         """
-        self._setting.add(setting)
+        self._settings.add(setting)
         if setting == Field.SETTINGS_LIMIT:
             self._limit = set()
             self.validator(lambda val: (val in self._limit))
@@ -67,6 +67,7 @@ class Field(object):
         """
         Sets the default that is returned if this field can't find a value
         If the default is a subclass of Exception, the default is raised instead
+        make sure you pass in an instance of the exception, not the class
         """
         self._default = default
 
@@ -111,17 +112,19 @@ class Field(object):
                 continue
 
             # Make sure that only a valid type is returned
-            if !Field.SETTINGS_LIST in self._settings:
-                val = list(val)
-            # Check every single value for validity
-            valid = True
-            for value in val:
-                valid = self._validate_cal(val) and valid
-                # optimize by breaking out at first False
-                if not valid:
-                    break
-            if valid:
-                return val
+            if Field.SETTINGS_LIST in self._settings:
+                # Check every single value for validity
+                valid = True
+                for value in val:
+                    valid = self._validate_val(value) and valid
+                    # optimize by breaking out at first False
+                    if not valid:
+                        break
+                if valid:
+                    return val
+            else:
+                if self._validate_val(val):
+                    return val
 
         # Since nothing was found the default applies
         if isinstance(self._default, BaseException):
