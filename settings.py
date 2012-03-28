@@ -2,11 +2,24 @@
 import os.path
 
 
-# Test discoverer, finds and runs all tests in the
-# 'test/ folder
+########################################
+# Testing
+########################################
+
+TEST_RUNNER = "tests.runner.DiscoveryRunner"
+
+# location of the tests folder
 BASE_PATH = os.path.dirname(__file__)
 TEST_DISCOVERY_ROOT = os.path.join(BASE_PATH, "tests")
-TEST_RUNNER = "tests.runner.DiscoveryRunner"
+
+# Regexp pattern to match when looking for test files
+# The runner will look in these files for TestCase classes
+TEST_FILE_PATTERN = 'test*.py'
+
+
+########################################
+# Misc default options (unsorted)
+########################################
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

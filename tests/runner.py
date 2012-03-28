@@ -1,5 +1,5 @@
 # Test discovery which runs all the tests in the
-# PersOA.tests module
+# tests module
 # See carljm.github.com/django-testing-slides/#9
 
 import settings
@@ -23,6 +23,7 @@ class DiscoveryRunner(DjangoTestSuiteRunner):
         if suite is None:
             suite = unittest.defaultTestLoader.discover(
                 discovery_root,
+                pattern=settings.TEST_FILE_PATTERN,
                 top_level_dir=settings.BASE_PATH,
             )
 
