@@ -14,7 +14,7 @@ TEST_DISCOVERY_ROOT = os.path.join(BASE_PATH, "tests")
 
 # Regexp pattern to match when looking for test files
 # The runner will look in these files for TestCase classes
-TEST_FILE_PATTERN = 'test*.py'
+TEST_FILE_PATTERN = '*_test.py'
 
 
 ########################################
