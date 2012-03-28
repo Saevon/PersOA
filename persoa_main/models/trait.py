@@ -1,7 +1,7 @@
 from django.db import models
 
-from persoa_main.constants.database import MAX_CHAR_LENGTH
-from persoa_main.models.abstract import AbstractPersOAModel
+from app.constants.database import MAX_CHAR_LENGTH
+from app.models.abstract import AbstractPersOAModel
 
 class AbstractTrait(AbstractPersOAModel):
     """

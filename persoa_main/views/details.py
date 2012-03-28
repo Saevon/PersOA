@@ -3,7 +3,7 @@ from django.http import HttpResponse
 import simplejson
 
 from helpers.decorators import cascade
-from persoa_main.helpers import extract, field, IncludeField
+from app.helpers import extract, field, IncludeField
 
 @require_GET
 def trait_groups(request):
