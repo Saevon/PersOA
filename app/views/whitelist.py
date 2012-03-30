@@ -81,7 +81,7 @@ class Whitelist(object):
 
             # Check for any pre-conditions
             for case in self._optional[name]:
-                error = case.check(self._final):
+                error = case.check(self._final)
                 if error is not None:
                     # process error
                     # Keep only the first error per field
