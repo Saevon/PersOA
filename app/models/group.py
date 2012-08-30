@@ -38,7 +38,7 @@ class TraitGroup(AbstractPersOAModel):
 
     def generate(self, *args, **kwargs):
         """
-        Returns a choice from this trait
+        Returns a choice for each of the groupings traits
         """
         return NotImplemented
 

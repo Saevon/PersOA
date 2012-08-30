@@ -25,7 +25,7 @@ class AbstractChoice(AbstractPersOAModel):
 
     def generated_data(self):
         """
-        Returns data that is shown if this was generate
+        Returns data that is shown if this was generated
         """
         return self.name
 
@@ -82,6 +82,7 @@ class LinearChoice(AbstractChoice):
 class SubChoice(AbstractPersOAModel):
     """
     A secondary level of a choice
+        Is made to allow groupings with a depth of 2
     """
 
     name = models.CharField(
