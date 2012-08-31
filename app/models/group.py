@@ -36,6 +36,7 @@ class TraitGroup(AbstractPersOAModel):
         """
         return self.basic_traits + self.linear_traits
 
+    @seeded(2)
     def generate(self, num=None, seed=None):
         """
         Returns a choice for each of the groupings traits

@@ -23,10 +23,21 @@ class AbstractChoice(AbstractPersOAModel):
     def __unicode__(self):
         return unicode(self.name)
 
-    def generated_data(self):
+    @seeded(1)
+    def generated_data(self, seed=None):
         """
         Returns data that is shown if this was generated
+            Note: if this choice has subchoices, then one is generated in this function
+            and a ' :: ' is used to seperate the choice from the subchoice
+            e.g. 'Phobia :: Pyrophobia'
         """
+        if len(self.sub_choices):
+            num = seed() % len(self.sub_choices)
+            return '%(choice)s :: %(name)s' % {
+                'choice': self.name,
+                'name': self.sub_choices[num].generated_data(),
+            }
+
         return self.name
 
     def details(self, include=None):
@@ -98,3 +109,9 @@ class SubChoice(AbstractPersOAModel):
         related_name='sub_choices',
         blank=False,
         null=False)
+
+    def generated_data(self):
+        """
+        Returns data that is shown if this was generated
+        """
+        return self.name

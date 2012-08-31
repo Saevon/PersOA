@@ -14,6 +14,25 @@ def cascade(func):
         return self
     return wrapper
 
+def seeded(pos):
+    """
+    Decorator:
+    Looks for the positional pos(int) or keyword name(str) argument and if
+    the argument is a list calls the function once for each item
+
+    This changes the function to always return void
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if not (len(args) > pos or kwargs.has_key('seed')):
+                kwargs['seed'] = Seed();
+            else:
+                kwargs['seed'] = Seed(kwargs['seed'])
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
 def allow_list(pos, name=None):
     """
     Decorator:

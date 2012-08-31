@@ -50,6 +50,7 @@ class AbstractTrait(AbstractPersOAModel):
             'defn': self.defn,
         }
 
+    @seeded(2)
     def generate(self, num=None, seed=None):
         """
         Returns num choices from this trait using the given seed
@@ -74,6 +75,7 @@ class BasicTrait(AbstractTrait):
         })
         return details
 
+    @seeded(2)
     def generate(self, num=None, seed=None):
         """
         Returns num choices from this trait using the given seed
@@ -117,6 +119,7 @@ class LinearTrait(AbstractTrait):
         })
         return details
 
+    @seeded(2)
     def generate(self, num=None, seed=None):
         """
         Returns num choices from this trait using the given seed
