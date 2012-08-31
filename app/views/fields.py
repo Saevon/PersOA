@@ -55,7 +55,7 @@ class Field(object):
     def choice(self, choice):
         """
         If the LIMIT setting is disabled enables it
-        Also adds choice to the possible choices for this field
+        Then adds choice to the possible choices for this field
         """
         if not Field.SETTINGS_LIMIT in self._settings:
             self.setting(Field.SETTINGS_LIMIT)
@@ -101,6 +101,10 @@ class Field(object):
         return self._first_valid(params)
 
     def _first_valid(self, params):
+        """
+        Tries to find the first valid field in params that fits the set criteria.
+        returns/raises the default value if none was found
+        """
         for key in self._keys:
             val = params.get(key)
             if val is None:

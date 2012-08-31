@@ -2,6 +2,7 @@ from django.db import models
 
 from app.constants.database import MAX_CHAR_LENGTH
 from app.models.abstract import AbstractPersOAModel
+from helpers.decorators import seeded
 
 class AbstractTrait(AbstractPersOAModel):
     """
@@ -86,7 +87,7 @@ class BasicTrait(AbstractTrait):
         length = len(self.choices)
 
         choices = []
-        for range(num):
+        for i in range(num):
             num = seed() % length
             choice = self.choices[num]
 
@@ -130,7 +131,7 @@ class LinearTrait(AbstractTrait):
         length = len(self.choices)
 
         choices = []
-        for range(num):
+        for i in range(num):
             num = seed() % length
             choice = self.choices[num]
 

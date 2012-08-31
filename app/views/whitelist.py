@@ -7,6 +7,9 @@ class Whitelist(object):
     INCLUDE_KEYS = ['include']
 
     def __init__(self):
+        """
+        Creates an empty Whitelist
+        """
         self._whitelist = {
             Whitelist.INCLUDE_NAME: Field
         }
@@ -61,6 +64,9 @@ class Whitelist(object):
     @cascade
     @allow_list(1, 'choice')
     def include(self, choice):
+        """
+        Adds a new include field choice
+        """
         self._whitelist[Whitelist.INCLUDE].include(choice)
 
     @cascade

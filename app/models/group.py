@@ -4,6 +4,7 @@ from django.db import models
 
 from app.constants.database import MAX_CHAR_LENGTH
 from app.models.abstract import AbstractPersOAModel
+from helpers.decorators import seeded
 
 class TraitGroup(AbstractPersOAModel):
     """
