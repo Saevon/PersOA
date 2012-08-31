@@ -10,8 +10,7 @@ class Field(object):
     __type_checkers = dict()
 
     # Special settings for a field
-    # TODO: currently if you combine LIST and LIMIT all items in the list
-    # must be part of the given choices otherwise the whole list fails
+    # If you combine both then all items in the list must be part of the choices
     SETTINGS_LIST = 'list'
     SETTINGS_LIMIT = 'limit'
 
@@ -44,7 +43,7 @@ class Field(object):
     @allow_list(1, 'setting')
     def setting(self, setting):
         """
-        Enables a Field setting
+        Enables a Field setting. Passing in a setting twice resets any arguments it stores
         """
         self._settings.add(setting)
         if setting == Field.SETTINGS_LIMIT:

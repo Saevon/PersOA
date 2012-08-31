@@ -5,7 +5,6 @@ class Case(object):
     def passed(self, params):
         raise NotImplementedError
 
-
 class IncludeCase(object):
 
     def __init__(self, keys):
