@@ -6,7 +6,7 @@ class Seed(int):
 	same limits as an int
 	"""
 
-	INT_MIN = -10
+	INT_MIN = 0
 	INT_MAX = 10
 
 	def __init__(self, num=None):
@@ -20,7 +20,7 @@ class Seed(int):
 			self.__algorithm = Seed._new
 			self.__val == num
 	
-	def __get__(self):
+	def __call__(self):
 		"""
 		Returns the current seed and generates a new one
 		"""

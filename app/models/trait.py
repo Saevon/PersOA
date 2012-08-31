@@ -23,12 +23,6 @@ class AbstractTrait(AbstractPersOAModel):
     def __unicode__(self):
         return unicode(self.name)
 
-    def generate(self, seed=None):
-        """
-        Returns a choice from this trait
-        """
-        return NotImplemented
-
     def details(self, include=None):
         """
         Returns a dict with the trait's details
@@ -56,6 +50,12 @@ class AbstractTrait(AbstractPersOAModel):
             'defn': self.defn,
         }
 
+    def generate(self, num=None, seed=None):
+        """
+        Returns num choices from this trait using the given seed
+        """
+        return NotImplemented
+
 class BasicTrait(AbstractTrait):
     """
     A trait which has a list of choices, and is chosen X times
@@ -64,6 +64,9 @@ class BasicTrait(AbstractTrait):
     default_num = models.PositiveSmallIntegerField(blank=False, null=False)
 
     def data(self):
+        """
+        Returns a dict with the basic details
+        """
         details = super(BasicTrait, self).data()
         details.update({
             'type': 'basic',
@@ -71,9 +74,28 @@ class BasicTrait(AbstractTrait):
         })
         return details
 
+    def generate(self, num=None, seed=None):
+        """
+        Returns num choices from this trait using the given seed
+        """
+        if num is None:
+            num = self.default_num
+
+        length = len(self.choices)
+
+        choices = []
+        for range(num):
+            num = seed() % length
+            choice = self.choices[num]
+
+            choices.append(choice)
+
+        return choices
+        
+
 class LinearTrait(AbstractTrait):
     """
-    A trait with its choices on a scale
+    A trait with its choices on a scale with only +1/-1 choices
     """
 
     neg_name = models.CharField(
@@ -84,6 +106,9 @@ class LinearTrait(AbstractTrait):
         blank=False)
 
     def data(self):
+        """
+        Returns a dict with the basic details
+        """
         details = super(LinearTrait, self).data()
         details.update({
             'type': 'scale',
@@ -91,3 +116,21 @@ class LinearTrait(AbstractTrait):
             'pos': self.pos_name,
         })
         return details
+
+    def generate(self, num=None, seed=None):
+        """
+        Returns num choices from this trait using the given seed
+        """
+        if num is None:
+            num = 1
+
+        length = len(self.choices)
+
+        choices = []
+        for range(num):
+            num = seed() % length
+            choice = self.choices[num]
+
+            choices.append(choice)
+
+        return choices
