@@ -36,11 +36,15 @@ class TraitGroup(AbstractPersOAModel):
         """
         return self.basic_traits + self.linear_traits
 
-    def generate(self, *args, **kwargs):
+    def generate(self, num=None, seed=None):
         """
         Returns a choice for each of the groupings traits
         """
-        return NotImplemented
+        group = {}
+        for trait in self.traits:
+            group[trait.name] = trait.generate(num, seed)
+
+        return group
 
     def details(self, include=None):
         """
