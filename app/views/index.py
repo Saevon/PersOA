@@ -5,11 +5,17 @@ import simplejson
 @require_GET
 def index(request):
     response = HttpResponse(mimetype='application/json')
-    simplejson.dump(request, response.GET)
+    simplejson.dump(request.GET, response)
     return response
 
 @require_GET
 def about(request):
+    out = {
+        'authors': ['Saevon', 'BlastOfWind'],
+        'created': 'December 15th 2011',
+        'desc': 'An app that is used to generate, view or store roleplaying personalities. Based on AshAmi\'s personality site',
+        'links': [],
+    }
     response = HttpResponse(mimetype='application/json')
-    simplejson.dump(request, response.GET)
+    simplejson.dump(out, response)
     return response

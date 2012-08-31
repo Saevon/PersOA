@@ -5,18 +5,18 @@ import simplejson
 @require_GET
 def full(request):
     response = HttpResponse(mimetype='application/json')
-    simplejson.dump(request, response.GET)
+    simplejson.dump(request.GET, response)
     return response
 
 @require_GET
 def group(request):
     response = HttpResponse(mimetype='application/json')
-    simplejson.dump(request, response.GET)
+    simplejson.dump(request.GET, response)
     return response
 
 @require_GET
 def trait(request):
     response = HttpResponse(mimetype='application/json')
-    simplejson.dump(request, response.GET)
+    simplejson.dump(request.GET, response)
     return response
 
