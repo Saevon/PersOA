@@ -32,6 +32,7 @@ class AbstractChoice(AbstractPersOAModel):
     def details(self, include=None):
         """
         Returns a dict with the choice's details
+            Note: For this to work the sub-class needs to have a trait property
         """
         details = self.data()
         if include is not None and 'traits' in include:
