@@ -1,5 +1,5 @@
 from django.utils import unittest
-from app.views.fields import Field
+from app.views.field import Field
 
 class TestFields(unittest.TestCase):
 

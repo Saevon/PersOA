@@ -2,7 +2,6 @@ from django.views.decorators.http import require_GET
 from django.http import HttpResponse
 import simplejson
 
-from helpers.decorators import cascade
 from app.helpers import extract, field, IncludeField
 
 @require_GET

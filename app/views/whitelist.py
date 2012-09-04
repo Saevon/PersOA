@@ -1,3 +1,4 @@
+from app.views.field import Field
 from collections import defaultdict
 from helpers.decorators import allow_list, cascade
 
@@ -11,8 +12,11 @@ class Whitelist(object):
         Creates an empty Whitelist
         """
         self._whitelist = {
-            Whitelist.INCLUDE_NAME: Field
+            Whitelist.INCLUDE_NAME: (Field(Whitelist.INCLUDE_KEYS, Whitelist.INCLUDE_NAME, basestring)
+                .setting(Field.SETTINGS_LIST)
+            ),
         }
+        self._includes = {}
         self._required = set()
         self._optional = defaultdict(list)
         self._errors = []
@@ -40,7 +44,7 @@ class Whitelist(object):
 
         # Could raise a KeyEror
         self._whitelist.pop(key)
-        self._includes.discard(key)
+        self._includes.pop(key)
         self._required.discard(key)
         self._optional.discard(key)
 
@@ -62,23 +66,46 @@ class Whitelist(object):
         self._optional[field.get_name()] = case
 
     @cascade
-    @allow_list(1, 'choice')
-    def include(self, choice):
+    def include(self, keys, name):
         """
-        Adds a new include field choice
+        Adds a new include choice
         """
-        self._whitelist[Whitelist.INCLUDE].include(choice)
+        self._whitelist[Whitelist.INCLUDE_NAME].choice(keys)
 
-    @cascade
+        for key in keys:
+            if self._includes.has_key(key):
+                self._includes[key].append(name)
+            else:
+                self._includes[key] = [name]
+
     def process(self, params):
         """
         Reads params(dict) and returns a whitelisted dict.
         """
-        self._final = {}
+        self._final = {
+            Whitelist.INCLUDE_NAME: {}
+        }
         self._fields = set(self._whitelist.keys())
 
-        # First add Includes
-        self._process(params, [self._whitelist[Whitelist.INCLUDE]])
+        # Look for the required fields
+        #self._process(params, self._required)
+
+        # Find what is included
+        includes = self._whitelist[Whitelist.INCLUDE_NAME].val(params)
+
+        for key in includes:
+            if self._includes.has_key(key):
+                for name in self._includes[key]:
+                    self._final[Whitelist.INCLUDE_NAME][name] = True
+
+        # Check for the optional arguments
+
+        # Get the rest
+
+
+
+
+        return self._final
 
     def _process(self, params, field_names):
         for name in field_names:
@@ -94,8 +121,11 @@ class Whitelist(object):
                     break
 
             # Get the data
-            valid = self._whitelist[name].val(params)
-            self._final[field.get_name()] = valid
+            try:
+                valid = self._whitelist[name].val(params)
+                self._final[field.get_name()] = valid
+            except KeyError:
+                pass
 
             # Check for any post-conditions
 
