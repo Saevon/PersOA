@@ -1,5 +1,5 @@
 from django.utils import unittest
-from helpers import decorators
+from utils import decorators
 
 class Foo(object):
     """Class to test the cascade decorator"""

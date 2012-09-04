@@ -1,6 +1,6 @@
 from app.views.field import Field
 from collections import defaultdict
-from helpers.decorators import allow_list, cascade
+from utils.decorators import allow_list, cascade
 
 class Whitelist(object):
 

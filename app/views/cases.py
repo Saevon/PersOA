@@ -1,5 +1,5 @@
 from app.views.whitelist import Whitelist
-from helpers.decorators import cascade
+from utils.decorators import cascade
 
 class Case(object):
     """

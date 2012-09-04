@@ -1,5 +1,5 @@
 import simplejson
-from helpers.decorators import allow_list, cascade
+from utils.decorators import allow_list, cascade
 
 class Field(object):
     """
