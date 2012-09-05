@@ -17,6 +17,7 @@ class Whitelist(object):
             ),
         }
         self._includes = {}
+        self._include_names = {}
         self._required = set()
         self._optional = defaultdict(list)
         self._errors = []
@@ -45,6 +46,7 @@ class Whitelist(object):
         # Could raise a KeyEror
         self._whitelist.pop(key)
         self._includes.pop(key)
+        self._include_names.pop(key)
         self._required.discard(key)
         self._optional.discard(key)
 
@@ -72,6 +74,7 @@ class Whitelist(object):
         """
         self._whitelist[Whitelist.INCLUDE_NAME].choice(keys)
 
+        self._include_names[name] = False
         for key in keys:
             if self._includes.has_key(key):
                 self._includes[key].append(name)
@@ -83,7 +86,7 @@ class Whitelist(object):
         Reads params(dict) and returns a whitelisted dict.
         """
         self._final = {
-            Whitelist.INCLUDE_NAME: {}
+            Whitelist.INCLUDE_NAME: self._include_names.copy()
         }
         self._fields = set(self._whitelist.keys())
 
