@@ -75,14 +75,44 @@ class TestWhitelist(unittest.TestCase):
 
         self.assertTrue(len(out) == 0)
 
-    def test_require(self):
+    def test_fields(self):
         (self.whitelist
-            .require(Field(['test', 'name'], 'test', basestring))
+            .add(Field(['test'], 'test', int))
+            .add(Field(['other'], 'test2', int))
+            .add(Field(['test3'], 'test3', int))
         )
 
         args = {
-            'test': 'The Test',
+            'test': '20',
+            'other': '"12"',
         }
 
         out = self.whitelist.process(args)
+
+        self.assertEquals(20, out['test'])
+        self.assertEquals(12, out['test2'])
+
+    def test_fields(self):
+        (self.whitelist
+            .add(Field(['test'], 'test', int))
+            .add(Field(['other'], 'test2', int))
+            .add(Field(['test3'], 'test3', int))
+        )
+
+        args = {
+            'test': '20',
+            'other': '"12"',
+        }
+
+        out = self.whitelist.process(args)
+
+        self.assertEquals(20, out['test'])
+        self.assertEquals(12, out['test2'])
+
+    def test_fields__duplicate_fields(self):
+        (self.whitelist
+            .add(Field(['test'], 'test', int))
+        )
+        with self.assertRaises(KeyError):
+            self.whitelist.add(Field(['key'], 'test'))
 

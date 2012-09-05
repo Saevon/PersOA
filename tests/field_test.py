@@ -31,24 +31,6 @@ class TestFields(unittest.TestCase):
         self.assertTrue(is_Cls2(Cls()))
         self.assertFalse(is_Cls2(1))
 
-    def test_validation__default(self):
-        val = 'sample'
-        self.assertTrue(self.field._validate_val(val))
-
-        val = u'sample'
-        self.assertTrue(self.field._validate_val(val))
-
-        val = 1
-        self.assertFalse(self.field._validate_val(val))
-
-    def test_validation__non_str(self):
-        self.field = Field(['in'], 'out', int)
-
-        val = 16
-        self.assertTrue(self.field._validate_val(val))
-        val = '16'
-        self.assertFalse(self.field._validate_val(val))
-
     def test_validation__new_validator(self):
         self.field.validator(lambda val: ((int(val) - 1) % 5))
 

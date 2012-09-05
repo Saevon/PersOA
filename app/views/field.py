@@ -27,7 +27,8 @@ class Field(object):
 
         # defaults
         self._default = KeyError()
-        self._validators = [Field.type_checker(cls)]
+        self._validators = []
+        self._type = cls
 
     @staticmethod
     def type_checker(cls):
@@ -118,7 +119,14 @@ class Field(object):
             if Field.SETTINGS_LIST in self._settings:
                 # Check every single value for validity
                 valid = True
-                for value in val:
+                for index in range(len(val)):
+                    value = val[index]
+                    if not Field.type_checker(self._type)(value):
+                        try:
+                            val[index] = self._type(value)
+                        except TypeError:
+                            valid = False
+                            break
                     valid = self._validate_val(value) and valid
                     # optimize by breaking out at first False
                     if not valid:
@@ -126,7 +134,13 @@ class Field(object):
                 if valid:
                     return val
             else:
-                if self._validate_val(val):
+                valid = True
+                if not Field.type_checker(self._type)(val):
+                    try:
+                        val = self._type(val)
+                    except TypeError:
+                        valid = False
+                if valid and self._validate_val(val):
                     return val
 
         # Since nothing was found the default applies

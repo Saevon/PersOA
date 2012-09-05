@@ -18,9 +18,6 @@ class Whitelist(object):
         }
         self._includes = {}
         self._include_names = {}
-        self._required = set()
-        self._optional = defaultdict(list)
-        self._errors = []
 
     @cascade
     @allow_list(1, 'field')
@@ -47,25 +44,6 @@ class Whitelist(object):
         self._whitelist.pop(key)
         self._includes.pop(key)
         self._include_names.pop(key)
-        self._required.discard(key)
-        self._optional.discard(key)
-
-    @cascade
-    @allow_list(1, 'field')
-    def require(self, field):
-        """
-        Whitelist a list of fields labeling them as required
-        """
-        self.add(field)
-        self._required.add(field.get_name())
-
-    @cascade
-    def add_if(self, case, field):
-        """
-        Adds a field that is whitelisted if another field fills a condition
-        """
-        self.add(field)
-        self._optional[field.get_name()] = case
 
     @cascade
     def include(self, keys, name):
@@ -89,9 +67,7 @@ class Whitelist(object):
             Whitelist.INCLUDE_NAME: self._include_names.copy()
         }
         self._fields = set(self._whitelist.keys())
-
-        # Look for the required fields
-        self._process(params, self._required)
+        self._fields.remove(Whitelist.INCLUDE_NAME)
 
         # Find what is included
         try:
@@ -107,8 +83,8 @@ class Whitelist(object):
                     for name in self._includes[key]:
                         self._final[Whitelist.INCLUDE_NAME][name] = True
 
-        # Get the rest
-
+        # Get the other fields
+        self._process(params, list(self._fields))
 
         return self._final
 
@@ -117,25 +93,10 @@ class Whitelist(object):
             # Check the field off
             self._fields.remove(name)
 
-            # Check for any pre-conditions
-            for case in self._optional[name]:
-                error = case.check(self._final)
-                if error is not None:
-                    # process error
-                    # Keep only the first error per field
-                    break
-
+            field = self._whitelist[name]
             # Get the data
             try:
                 valid = self._whitelist[name].val(params)
                 self._final[field.get_name()] = valid
             except KeyError:
                 pass
-
-            # Check for any post-conditions
-
-    def _error(self, field_name, message):
-        pass
-
-    def errors(self):
-        pass
