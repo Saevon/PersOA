@@ -22,11 +22,10 @@ def group(request):
 def trait(request):
     # Translate the input
     args = (Whitelist()
-        .require(Field(['trait_name', 'trait'],'trait_name', basestring))
-        .include(['trait_desc', 'desc'], 'trait_desc')
-        .include(['choice_desc', 'desc'], 'choice_desc')
-        .process(request.GET)
-    )
+        .require(Field(['trait_name', 'trait', 'name'],'trait_name', basestring))
+        .include(['trait_desc', 'desc', 'details'], 'trait_desc')
+        .include(['choice_desc', 'desc', 'details'], 'choice_desc')
+    ).process(request.GET)
 
     # Find the Trait
 

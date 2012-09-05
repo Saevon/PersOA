@@ -91,21 +91,23 @@ class Whitelist(object):
         self._fields = set(self._whitelist.keys())
 
         # Look for the required fields
-        #self._process(params, self._required)
+        self._process(params, self._required)
 
         # Find what is included
-        includes = self._whitelist[Whitelist.INCLUDE_NAME].val(params)
+        try:
+            includes = self._whitelist[Whitelist.INCLUDE_NAME].val(params)
+        except KeyError:
+            self._final.pop(Whitelist.INCLUDE_NAME)
+            includes = False
 
-        for key in includes:
-            if self._includes.has_key(key):
-                for name in self._includes[key]:
-                    self._final[Whitelist.INCLUDE_NAME][name] = True
-
-        # Check for the optional arguments
+        # TODO: Really... the best I can think of is a staircase?
+        if includes:
+            for key in includes:
+                if self._includes.has_key(key):
+                    for name in self._includes[key]:
+                        self._final[Whitelist.INCLUDE_NAME][name] = True
 
         # Get the rest
-
-
 
 
         return self._final

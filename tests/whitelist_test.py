@@ -1,4 +1,6 @@
 from django.utils import unittest
+
+from app.views.field import Field
 from app.views.whitelist import Whitelist
 
 class TestWhitelist(unittest.TestCase):
@@ -27,6 +29,10 @@ class TestWhitelist(unittest.TestCase):
         # Make sure there are no keys in non-includes
         self.assertTrue(len(out) == 0)
 
+    def test_include__empty(self):
+        out = self.whitelist.process({})
+        self.assertFalse(out.has_key('include'))
+
     def test_include__mixed(self):
         (self.whitelist
             .include(['test', 'inc_test'], 'inc_test')
@@ -34,7 +40,7 @@ class TestWhitelist(unittest.TestCase):
         )
 
         args = {
-            'include': '["test"]'
+            'include': '["test"]',
         }
 
         out = self.whitelist.process(args)
@@ -57,7 +63,7 @@ class TestWhitelist(unittest.TestCase):
         )
 
         args = {
-            'include': '["test"]'
+            'include': '["test"]',
         }
 
         out = self.whitelist.process(args)
@@ -68,4 +74,15 @@ class TestWhitelist(unittest.TestCase):
         self.assertFalse(includes.has_key('test2'))
 
         self.assertTrue(len(out) == 0)
+
+    def test_require(self):
+        (self.whitelist
+            .require(Field(['test', 'name'], 'test', basestring))
+        )
+
+        args = {
+            'test': 'The Test',
+        }
+
+        out = self.whitelist.process(args)
 
