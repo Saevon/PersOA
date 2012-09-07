@@ -13,12 +13,12 @@ class AbstractTrait(AbstractPersOAModel):
         abstract = True
 
     name = models.CharField(
-    	max_length=MAX_CHAR_LENGTH,
+        max_length=MAX_CHAR_LENGTH,
         blank=False,
         unique=True)
     desc = models.TextField(blank=True)
     defn = models.CharField(
-    	max_length=MAX_DEFN_LENGTH,
+        max_length=MAX_DEFN_LENGTH,
         blank=True)
 
     def __unicode__(self):
@@ -102,10 +102,10 @@ class LinearTrait(AbstractTrait):
     """
 
     neg_name = models.CharField(
-    	max_length=MAX_CHAR_LENGTH,
+        max_length=MAX_CHAR_LENGTH,
         blank=False)
     pos_name = models.CharField(
-    	max_length=MAX_CHAR_LENGTH,
+        max_length=MAX_CHAR_LENGTH,
         blank=False)
 
     def data(self):

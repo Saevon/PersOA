@@ -12,7 +12,7 @@ class TraitGroup(AbstractPersOAModel):
     """
 
     name = models.CharField(
-    	max_length=MAX_CHAR_LENGTH,
+        max_length=MAX_CHAR_LENGTH,
         blank=False,
         unique=True)
     desc = models.TextField(blank=True)
@@ -28,7 +28,7 @@ class TraitGroup(AbstractPersOAModel):
         null=True)
 
     def __unicode__(self):
-    	return unicode(self.name)
+        return unicode(self.name)
 
     @property
     def traits(self):
