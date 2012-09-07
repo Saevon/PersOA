@@ -27,13 +27,18 @@ def seeded(pos):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            if not (len(args) > pos or kwargs.has_key('seed')):
-                kwargs['seed'] = Seed();
+            valid = lambda val: (
+                val if isinstance(val, int) and not val is None
+                else Seed()
+            )
+            if len(args) > pos:
+                args = list(args)
+                args[pos] = valid(args[pos])
+            elif kwargs.has_key('seed'):
+                kwargs['seed'] = valid(kwargs['seed'])
             else:
-                if len(args) > pos:
-                    args[pos] = Seed(args[pos])
-                else:
-                    kwargs['seed'] = Seed(kwarg['seed'])
+                kwargs['seed'] = Seed()
+            print args, kwargs
             return func(*args, **kwargs)
         return wrapper
     return decorator
