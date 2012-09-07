@@ -16,9 +16,10 @@ class Seed(int):
 		"""
 		if num is None:
 			self.__algorithm = Seed._randint
+			self.__val = Seed._randint(0)
 		else:
 			self.__algorithm = Seed._new
-			self.__val == num
+			self.__val = num
 	
 	def __call__(self):
 		"""
@@ -29,13 +30,15 @@ class Seed(int):
 
 		return seed
 
-	def _new(self, seed):
+	@staticmethod
+	def _new(seed):
 		"""
 		Creates a new seed based on the given value
 		"""
 		return NotImplemented
 
-	def _randint(self, seed):
+	@staticmethod
+	def _randint(seed):
 		"""
 		Creates a new seed using random.randint
 		"""

@@ -1,5 +1,30 @@
 from django.utils import unittest
-from utils import decorators
+from utils import decorators, seed
+
+
+class TestSeed(unittest.TestCase):
+
+    def setUp(self):
+        self.seed = seed.Seed(0)
+
+    def test_new(self):
+        self.seed = seed.Seed(0)
+
+        self.assertEquals(self.seed(), 0)
+
+    def test_new(self):
+        self.seed = seed.Seed()
+
+        val1 = self.seed()
+        val2 = self.seed()
+
+        self.assertTrue(isinstance(val1, int))
+        self.assertTrue(isinstance(val2, int))
+
+        if val1 == val2:
+            self.assertNotEquals(val2, self.seed(),
+                'The same value came up 3 times in a row. Does the nuber ever change?'
+            )
 
 class Foo(object):
     """Class to test the cascade decorator"""
