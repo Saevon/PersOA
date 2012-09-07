@@ -1,6 +1,6 @@
 from django.db import models
 
-from app.constants.database import MAX_CHAR_LENGTH
+from app.constants.database import MAX_CHAR_LENGTH, MAX_DEFN_LENGTH
 from app.models.abstract import AbstractPersOAModel
 from utils.decorators import seeded
 
@@ -18,7 +18,7 @@ class AbstractTrait(AbstractPersOAModel):
         unique=True)
     desc = models.TextField(blank=True)
     defn = models.CharField(
-    	max_length=MAX_CHAR_LENGTH,
+    	max_length=MAX_DEFN_LENGTH,
         blank=True)
 
     def __unicode__(self):
@@ -72,7 +72,7 @@ class BasicTrait(AbstractTrait):
         details = super(BasicTrait, self).data()
         details.update({
             'type': 'basic',
-            'default_num': self.def_num
+            'default_num': self.default_num
         })
         return details
 

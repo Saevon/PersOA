@@ -1,2 +1,4 @@
 # Char Field related
 MAX_CHAR_LENGTH = 100
+
+MAX_DEFN_LENGTH = 256

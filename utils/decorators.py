@@ -3,6 +3,8 @@ Useful decorators
 """
 from functools import wraps
 
+from utils.seed import Seed
+
 def cascade(func):
     """
     class method decorator, always returns the
@@ -28,7 +30,10 @@ def seeded(pos):
             if not (len(args) > pos or kwargs.has_key('seed')):
                 kwargs['seed'] = Seed();
             else:
-                kwargs['seed'] = Seed(kwargs['seed'])
+                if len(args) > pos:
+                    args[pos] = Seed(args[pos])
+                else:
+                    kwargs['seed'] = Seed(kwarg['seed'])
             return func(*args, **kwargs)
         return wrapper
     return decorator

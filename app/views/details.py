@@ -2,7 +2,7 @@ from django.views.decorators.http import require_GET
 from django.http import HttpResponse
 import simplejson
 
-from app.utils import extract, field, IncludeField
+
 
 @require_GET
 def trait_groups(request):
