@@ -84,12 +84,12 @@ class BasicTrait(AbstractTrait):
         if num is None:
             num = self.default_num
 
-        length = len(self.choices)
+        length = len(self.choices.all())
 
         choices = []
         for i in range(num):
             num = seed() % length
-            choice = self.choices[num]
+            choice = self.choices.all()[num]
 
             choices.append(choice.generated_data())
 

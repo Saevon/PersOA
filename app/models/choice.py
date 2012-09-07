@@ -32,7 +32,7 @@ class AbstractChoice(AbstractPersOAModel):
             and a ' :: ' is used to seperate the choice from the subchoice
             e.g. 'Phobia :: Pyrophobia'
         """
-        if len(self.sub_choices):
+        if len(self.sub_choices.all()):
             num = seed() % len(self.sub_choices)
             return '%(choice)s :: %(name)s' % {
                 'choice': self.name,

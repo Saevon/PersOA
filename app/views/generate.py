@@ -61,7 +61,10 @@ def trait(request):
 
     # Find the Trait
     # Temporarily hard-coded
-    trait = BasicTrait.objects.get(name='Primary Motivator')
+    trait = (BasicTrait.objects
+        .select_related()
+        .get(name='Primary Motivator')
+    )
 
     # Generate a choice
     if args['seed'] == None:
