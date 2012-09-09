@@ -1,2 +1,4 @@
 *.pyc
 env/
+index/
+persoa.db
