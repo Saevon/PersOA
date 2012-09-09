@@ -91,7 +91,7 @@ class BasicTrait(AbstractTrait):
             num = seed() % length
             choice = self.choices.all()[num]
 
-            choices.append(choice.generated_data())
+            choices.append(choice.generate(seed))
 
         return choices
         
@@ -135,6 +135,6 @@ class LinearTrait(AbstractTrait):
             num = seed() % length
             choice = self.choices[num]
 
-            choices.append(choice.generated_data())
+            choices.append(choice.generate(seed))
 
         return choices

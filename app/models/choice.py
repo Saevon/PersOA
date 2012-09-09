@@ -25,21 +25,14 @@ class AbstractChoice(AbstractPersOAModel):
         return unicode(self.name)
 
     @seeded(1)
-    def generated_data(self, seed=None):
+    def generate(self, seed=None):
         """
-        Returns data that is shown if this was generated
-            Note: if this choice has subchoices, then one is generated in this function
-            and a ' :: ' is used to seperate the choice from the subchoice
-            e.g. 'Phobia :: Pyrophobia'
+        Returns a choice or a sub_choice
         """
         if len(self.sub_choices.all()):
             num = seed() % len(self.sub_choices)
-            return '%(choice)s :: %(name)s' % {
-                'choice': self.name,
-                'name': self.sub_choices[num].generated_data(),
-            }
-
-        return self.name
+            return self.sub_choices.all()[num]
+        return self
 
     def details(self, include=None):
         """
@@ -47,10 +40,15 @@ class AbstractChoice(AbstractPersOAModel):
             Note: For this to work the sub-class needs to have a trait property
         """
         details = self.data()
-        if include is not None and 'traits' in include:
-            details.update({
-                'trait': self.trait.data(),
-            })
+        if include is None:
+            return details
+        elif include['choice_name']:
+            return self.name
+
+        if include['choice_trait']:
+            details['trait'] = self.trait.data()
+        if include['choice_desc']:
+            details['sub'] = [i.details(include) for i in self.sub_choices.all()]
         return details
 
     def data(self):
@@ -111,8 +109,28 @@ class SubChoice(AbstractPersOAModel):
         blank=False,
         null=False)
 
-    def generated_data(self):
+    def details(self, include=None):
         """
         Returns data that is shown if this was generated
         """
-        return self.name
+        details = self.data()
+        if include is None:
+            pass
+        elif 'sub_name' in include:
+            return '%(choice)s :: %(name)s' % {
+                'choice': self.choice.get().name,
+                'name': self.name,
+            }
+        return details
+
+    def data(self):
+        """
+        Returns a dict with the basic details
+        """
+        return {
+            'name': '%(choice)s :: %(name)s' % {
+                'choice': self.choice.get().name,
+                'name': self.name,
+            },
+            'defn': self.defn,
+        }

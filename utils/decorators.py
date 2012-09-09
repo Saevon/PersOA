@@ -1,9 +1,25 @@
 """
 Useful decorators
 """
-from functools import wraps
+from django.http import HttpResponse
 
+from functools import wraps
 from utils.seed import Seed
+import simplejson
+
+def json_return(func):
+    """
+    Wraps the returned object in a HttpResponse after a json dump,
+    returning that instead
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        data = func(*args, **kwargs)
+
+        response = HttpResponse(mimetype='application/json')
+        simplejson.dump(data, response)
+        return response
+    return wrapper
 
 def cascade(func):
     """
@@ -28,7 +44,7 @@ def seeded(pos):
         @wraps(func)
         def wrapper(*args, **kwargs):
             valid = lambda val: (
-                val if isinstance(val, int) and not val is None
+                Seed(val) if isinstance(val, int) and not val is None
                 else Seed()
             )
             if len(args) > pos:
@@ -38,7 +54,6 @@ def seeded(pos):
                 kwargs['seed'] = valid(kwargs['seed'])
             else:
                 kwargs['seed'] = Seed()
-            print args, kwargs
             return func(*args, **kwargs)
         return wrapper
     return decorator

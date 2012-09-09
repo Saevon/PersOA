@@ -1,6 +1,12 @@
 import simplejson
 from utils.decorators import allow_list, cascade
 
+class FieldError(LookupError):
+    """
+    Errors that will be stored by the whitelist
+    """
+    pass
+
 class Field(object):
     """
     An input Field which can read a dict and transform the
@@ -26,7 +32,7 @@ class Field(object):
         self._settings = set()
 
         # defaults
-        self._default = KeyError()
+        self._default = FieldError
         self._validators = []
         self._type = cls
 
@@ -144,8 +150,9 @@ class Field(object):
                     return val
 
         # Since nothing was found the default applies
-        if isinstance(self._default, BaseException):
-            raise self._default
+        if (type(self._default) == type(FieldError) and
+                issubclass(self._default, FieldError)):
+            raise self._default(self._name, self._keys)
         return self._default
 
     def _validate_val(self, val):

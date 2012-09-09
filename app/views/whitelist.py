@@ -1,4 +1,4 @@
-from app.views.field import Field
+from app.views.field import Field, FieldError
 from collections import defaultdict
 from utils.decorators import allow_list, cascade
 
@@ -18,6 +18,7 @@ class Whitelist(object):
         }
         self._includes = {}
         self._include_names = {}
+        self._errors = []
 
     @cascade
     @allow_list(1, 'field')
@@ -59,6 +60,25 @@ class Whitelist(object):
             else:
                 self._includes[key] = [name]
 
+    @cascade
+    def error(self, err):
+        """
+        Adds a new error to its list
+        """
+        self._errors.append(err)
+
+    def errors(self):
+        """
+        Returns the list of errors that occured
+        """
+        return self._errors
+
+    def clear_errors(self):
+        """
+        clears any errors that may have occured
+        """
+        self._errors = []
+
     def process(self, params):
         """
         Reads params(dict) and returns a whitelisted dict.
@@ -72,8 +92,8 @@ class Whitelist(object):
         # Find what is included
         try:
             includes = self._whitelist[Whitelist.INCLUDE_NAME].val(params)
-        except KeyError:
-            self._final.pop(Whitelist.INCLUDE_NAME)
+        except FieldError:
+            self._final[Whitelist.INCLUDE_NAME] = []
             includes = False
 
         # TODO: Really... the best I can think of is a staircase?
@@ -98,5 +118,5 @@ class Whitelist(object):
             try:
                 valid = self._whitelist[name].val(params)
                 self._final[field.get_name()] = valid
-            except KeyError:
-                pass
+            except FieldError, err:
+                self.error(err)
