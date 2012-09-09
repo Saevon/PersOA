@@ -3,6 +3,16 @@ import os.path
 
 
 ########################################
+# Personal Settings
+########################################
+if os.path.exists('personal.py'):
+    from personal import personalize
+else:
+    def personalize(*kwargs):
+        return False
+
+
+########################################
 # Testing
 ########################################
 
@@ -35,7 +45,7 @@ DATABASES = {
         #'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'ENGINE': 'django.db.backends.sqlite3',
         # Or path to database file if using sqlite3.
-        'NAME': '/home/saevon/data/persoa',
+        'NAME': personalize(DB_NAME='pearsoa.db'),
         # Not used with sqlite3.
         'USER': '',
         # Not used with sqlite3.# Not used with sqlite3.
@@ -171,3 +181,4 @@ LOGGING = {
         },
     }
 }
+
