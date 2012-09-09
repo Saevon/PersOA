@@ -2,13 +2,22 @@ from app.models.choice import BasicChoice, LinearChoice, SubChoice
 from app.models.group import TraitGroup
 from app.models.trait import BasicTrait, LinearTrait
 
+from collections import defaultdict
 from utils.decorators import cascade
 from whoosh import index
+from whoosh.qparser import MultifieldParser, OrGroup, QueryParser
+from whoosh.query import Term
 import os
 
 class WhooshIndex(object):
 
     INDICES = {}
+
+    CLASSES = {'choice': [], 'group': [], 'trait': [], 'all': [], 'index': {}}
+    for cls in [BasicTrait, LinearTrait]:
+        CLASSES['index'][cls.__name__] = cls
+        CLASSES['all'].append(unicode(cls.__name__))
+        CLASSES['trait'].append(unicode(cls.__name__))
 
     def __init__(self, indexdir):
         self._indexdir = indexdir
@@ -30,9 +39,10 @@ class WhooshIndex(object):
 
         schema = Schema(
             # Identification
-            name=TEXT(stored=True),
-            kind=ID(stored=True),
+            id=ID(stored=True),
+            type=ID(stored=True),
             # Searching
+            name=TEXT,
             keywords=KEYWORD,
             defn=TEXT,
             desc=TEXT,
@@ -68,7 +78,7 @@ class WhooshIndex(object):
 
         for item in items:
             data = self.index_data(item)
-            self.writer.update_document(**data)
+            self.writer.add_document(**data)
         self.writer.commit()
 
     @property
@@ -77,8 +87,38 @@ class WhooshIndex(object):
             self._writer = self.index.writer()
         return self._writer
 
-    def search(self, *args):
-        pass
+    def search(self, **kwargs):
+        kwargs = defaultdict(unicode, **kwargs)
+        with self.index.searcher() as searcher:
+            query = (QueryParser('keywords', self.index.schema)
+                .parse(unicode(kwargs.get('query', u'').lower()))
+            )
+
+            if len(kwargs['name']):
+                query = (query & QueryParser(u'name', self.index.schema)
+                    .parse(" ".join([
+                        unicode(i) for i in kwargs['name']
+                    ]))
+                )
+            if len(kwargs['desc']):
+                query = (query
+                    & MultifieldParser([u'desc', u'defn'], self.index.schema)
+                        .parse(" ".join([
+                            unicode(i) for i in kwargs['desc']
+                        ]))
+                )
+
+            if kwargs['type']:
+                query = (
+                    QueryParser(u'type', self.index.schema, group=OrGroup).parse(" ".join(kwargs['type']))
+                    & query
+                )
+
+            print query
+            results = [hit.fields() for hit in
+                searcher.search(query, limit=1)
+            ]
+            return results
 
     def index_data(self, item):
         data = {}
@@ -87,7 +127,7 @@ class WhooshIndex(object):
         if isinstance(item, BasicChoice):
             data = {
                 'name': item.name,
-                'kind': u'BasicChoice',
+                'type': u'BasicChoice',
                 'keywords': u'%s choice' % (item.name),
                 'desc': item.desc,
                 'defn': item.defn,
@@ -95,7 +135,7 @@ class WhooshIndex(object):
         elif isinstance(item, LinearChoice):
             data = {
                 'name': item.name,
-                'kind': u'LinearChoice',
+                'type': u'LinearChoice',
                 'keywords': u'%s choice' % (item.name),
                 'desc': item.desc,
                 'defn': item.defn,
@@ -103,38 +143,42 @@ class WhooshIndex(object):
         elif isinstance(item, SubChoice):
             data = {
                 'name': item.name,
-                'kind': u'SubChoice',
+                'type': u'SubChoice',
                 'keywords': u'%s %s subchoice choice' %
                     (item.choice.name, item.name),
-                'desc': item.desc,
-                'defn': item.desc,
+                'desc': u'',
+                'defn': item.defn,
             }
         # Groups
         elif isinstance(item, TraitGroup):
             data = {
                 'name': item.name,
-                'kind': u'TraitGroup',
+                'type': u'TraitGroup',
                 'keywords': u'%s group' % (item.name),
                 'desc': item.desc,
-                'defn': item.desc,
+                'defn': u'',
             }
         # Traits
         elif isinstance(item, BasicTrait):
             data = {
                 'name': item.name,
-                'kind': u'BasicTrait',
+                'type': u'BasicTrait',
                 'keywords': u'%s trait' % (item.name),
                 'desc': item.desc,
                 'defn': item.defn,
             }
         elif isinstance(item, LinearTrait):
-                data = {
+            data = {
                 'name': item.name,
-                'kind': u'LinearTrait',
-                'keywords': u'%s trait' % (item.name),
+                'type': u'LinearTrait',
+                'keywords': u'%s %s %s trait' % (
+                    item.name, item.pos_name, item.neg_name
+                ),
                 'desc': item.desc,
                 'defn': item.defn,
             }
+        data['id'] = unicode(item.id)
+        data['keywords'] = data['keywords'].lower()
 
         return data
 

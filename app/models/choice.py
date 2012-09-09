@@ -26,12 +26,6 @@ class AbstractChoice(AbstractPersOAModel):
 
     @seeded(1)
     def generate(self, seed=None):
-        """
-        Returns a choice or a sub_choice
-        """
-        if len(self.sub_choices.all()):
-            num = seed() % len(self.sub_choices)
-            return self.sub_choices.all()[num]
         return self
 
     def details(self, include=None):
@@ -47,8 +41,6 @@ class AbstractChoice(AbstractPersOAModel):
 
         if include['choice_trait']:
             details['trait'] = self.trait.data()
-        if include['choice_desc']:
-            details['sub'] = [i.details(include) for i in self.sub_choices.all()]
         return details
 
     def data(self):
@@ -70,6 +62,23 @@ class BasicChoice(AbstractChoice):
         related_name='choices',
         blank=False,
         null=False)
+
+    @seeded(1)
+    def generate(self, seed=None):
+        """
+        Returns a choice or a sub_choice
+        """
+        if len(self.sub_choices.all()):
+            num = seed() % len(self.sub_choices.all())
+            return self.sub_choices.all()[num]
+        return self
+
+    def details(self, include=None):
+        details = Super(BasicChoice, self).details(include)
+
+        if include['choice_desc']:
+            details['sub'] = [i.details(include) for i in self.sub_choices.all()]
+        return details
 
 class LinearChoice(AbstractChoice):
     """
@@ -116,9 +125,9 @@ class SubChoice(AbstractPersOAModel):
         details = self.data()
         if include is None:
             pass
-        elif 'sub_name' in include:
+        elif 'choice_name' in include:
             return '%(choice)s :: %(name)s' % {
-                'choice': self.choice.get().name,
+                'choice': self.choice.name,
                 'name': self.name,
             }
         return details
@@ -129,7 +138,7 @@ class SubChoice(AbstractPersOAModel):
         """
         return {
             'name': '%(choice)s :: %(name)s' % {
-                'choice': self.choice.get().name,
+                'choice': self.choice.name,
                 'name': self.name,
             },
             'defn': self.defn,

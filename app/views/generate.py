@@ -2,11 +2,15 @@ from django.views.decorators.http import require_GET
 from django.http import HttpResponse
 import simplejson
 
+from app.constants.index import INDEX_DIR
 from app.models.trait import BasicTrait, LinearTrait
 from app.views.errors import persoa_errors, PersOARequiredFieldError
 from app.views.field import Field
 from app.views.whitelist import Whitelist
+from app.views.search import WhooshIndex
 from utils.decorators import json_return
+
+WhooshIndex.get(INDEX_DIR)
 
 @require_GET
 def full(request):
@@ -58,7 +62,7 @@ def trait(request):
         .add(Field(['trait_name', 'trait', 'name'],'trait_name', basestring).default(PersOARequiredFieldError))
         .add(Field(['seed'],'seed', int).default(None))
         .add(Field(['num'], 'num', int).default(None))
-        .include(['trait_desc', 'desc', 'details'], 'choice_trait')
+        .include(['trait_desc', 'desc', 'details', 'trait'], 'choice_trait')
         .include(['choice_desc', 'desc', 'details'], 'choice_desc')
         .include(['choice_name', 'name'], 'choice_name')
     )
@@ -72,13 +76,33 @@ def trait(request):
         return persoa_errors(errors)
 
     # Find the Trait
-    trait = (BasicTrait.objects
-        .select_related()
-        .get(name=args['trait_name'])
+    trait = None
+
+    results = WhooshIndex.get(INDEX_DIR).search(
+        name=[args['trait_name']],
+        type=WhooshIndex.CLASSES['trait']
     )
+    if len(results):
+        cls = WhooshIndex.CLASSES['index'][results[0]['type']]
+
+        trait = (cls.objects
+            .select_related()
+            .get(id=results[0]['id'])
+        )
+    else:
+        name = args['trait_name']
+        try:
+            trait = (BasicTrait.objects
+                .select_related()
+                .get(name=name)
+            )
+        except BasicTrait.DoesNotExist:
+            trait = (LinearTrait.objects
+                .select_related()
+                .get(name=name)
+            )
 
     # Generate a choice
-    print args['include']
     generated = trait.generate(args['num'], args['seed'])
     generated = [i.details(args[Whitelist.INCLUDE_NAME]) for
         i in generated]
