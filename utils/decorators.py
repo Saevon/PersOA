@@ -44,8 +44,11 @@ def seeded(pos):
         @wraps(func)
         def wrapper(*args, **kwargs):
             valid = lambda val: (
-                Seed(val) if isinstance(val, int) and not val is None
-                else Seed()
+                val if isinstance(val, Seed)
+                else (
+                    Seed(val) if isinstance(val, int)
+                    else Seed()
+                )
             )
             if len(args) > pos:
                 args = list(args)
