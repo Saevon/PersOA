@@ -3,8 +3,8 @@ from django.http import HttpResponse
 import simplejson
 
 from app.constants.index import INDEX_DIR
+from app.errors import persoa_errors, PersOARequiredFieldError
 from app.models.trait import BasicTrait, LinearTrait
-from app.views.errors import persoa_errors, PersOARequiredFieldError
 from app.views.field import Field
 from app.views.whitelist import Whitelist
 from app.views.search import WhooshIndex
