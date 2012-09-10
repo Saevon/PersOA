@@ -32,11 +32,21 @@ class WhooshIndex(object):
         CLASSES['choice'].append(unicode(cls.__name__))
 
     def __init__(self, indexdir):
+        """
+        Creates a new index that reads/writes into the folder indexdir
+            Do NOT create WhooshIndexes directly, use the get method
+        """
         self._indexdir = indexdir
         self._writer = None
 
     @staticmethod
     def get(indexdir=None, flush=False):
+        """
+        Returns the WhooshIndex that is reading the index located in the
+        indexdir folder. flush indicates whether the index should be
+        remade from scratch, however this doesn't happen if the index is
+        already open.
+        """
         if not WhooshIndex.INDICES.has_key(indexdir):
             WhooshIndex.INDICES[indexdir] = (WhooshIndex(indexdir)
                 .open_index(flush=flush)
@@ -45,6 +55,10 @@ class WhooshIndex(object):
         return WhooshIndex.INDICES[indexdir]
 
     def create_schema(self, flush=False):
+        """
+        Creates the Schema for the index. if flush is True this removes
+        the old index if there was one.
+        """
         from whoosh.fields import Schema
         from whoosh.fields import ID, KEYWORD, TEXT
         from shutil import rmtree
@@ -76,12 +90,18 @@ class WhooshIndex(object):
 
     @cascade
     def open_index(self, flush=False):
+        """
+        Opens the index for reading/writing
+        """
         if not os.path.exists(self._indexdir) or flush:
             self.create_schema(flush=flush)
         else:
             self.index = index.open_dir(self._indexdir)
 
     def refresh_index(self):
+        """
+        Refreshes all the items in the index
+        """
         from itertools import chain
 
         items = chain(
@@ -98,6 +118,13 @@ class WhooshIndex(object):
         writer.commit()
 
     def search(self, **kwargs):
+        """
+        Finds the top item matching the arguments.
+            query(str): the text being searched for
+            name(list): The names of the item
+            desc(list): The data to search the defn and desc fields for
+            type(list): the expected type of the item (class names)
+        """
         kwargs = defaultdict(unicode, **kwargs)
         with self.index.searcher() as searcher:
             query = (QueryParser('keywords', self.index.schema)
@@ -132,21 +159,28 @@ class WhooshIndex(object):
 
     @cascade
     def refresh_item(self, item):
+        """
+        creates/updates the index for this item.
+        """
         writer = self.index.writer()
         writer.update_document(**self.index_data(item))
         writer.commit()
 
     @cascade
     def delete_item(self, item):
+        """
+        Deletes the item from the index
+        """
         writer = self.index.writer()
         data = self.index_data(item)
         writer.delete_by_term(u'index_id', data['index_id'])
         writer.commit()
 
     def index_data(self, item):
-        data = {}
-
-        # Choices
+        """
+        Converts the item into an indexable dictionary
+        """
+        # =========== Choices ==========
         if isinstance(item, BasicChoice):
             data = {
                 'name': unicode(item.name),
@@ -172,7 +206,7 @@ class WhooshIndex(object):
                 'desc': u'',
                 'defn': unicode(item.defn),
             }
-        # Groups
+        # =========== Traits ==========
         elif isinstance(item, TraitGroup):
             data = {
                 'name': unicode(item.name),
@@ -181,14 +215,14 @@ class WhooshIndex(object):
                 'desc': unicode(item.desc),
                 'defn': u'',
             }
-        # Traits
+        # =========== Traits ==========
         elif isinstance(item, BasicTrait):
             data = {
                 'name': unicode(item.name),
                 'type': u'BasicTrait',
                 'keywords': u'%s trait' % (item.name),
                 'desc': unicode(item.desc),
-                'defn': item.defn,
+                'defn': unicode(item.defn),
             }
         elif isinstance(item, LinearTrait):
             data = {
