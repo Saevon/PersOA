@@ -17,9 +17,9 @@ seed_field = Field(['seed'],'seed', int).default(None)
 num_field = Field(['num'], 'num', int).default(None)
 
 ############################################################
-# Generate Full
+# Generate Profile
 ############################################################
-full_whitelist = (Whitelist()
+profile_whitelist = (Whitelist()
     .add(seed_field)
     .add(num_field.default(1))
 
@@ -31,8 +31,8 @@ full_whitelist = (Whitelist()
 @require_GET
 @json_return
 @persoa_output
-def full(request, output=None):
-    whitelist = full_whitelist.clear()
+def profile(request, output=None):
+    whitelist = profile_whitelist.clear()
     # Translate the input
     args = whitelist.process(request.GET)
 
