@@ -157,4 +157,3 @@ def trait(request, output=None):
         [i.details(args[Whitelist.INCLUDE_NAME])
         for i in generated]
     )
-

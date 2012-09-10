@@ -17,19 +17,26 @@ class WhooshIndex(object):
 
     INDICES = {}
 
-    CLASSES = {'choice': [], 'group': [], 'trait': [], 'all': [], 'index': {}}
-    for cls in [BasicTrait, LinearTrait]:
-        CLASSES['index'][cls.__name__] = cls
-        CLASSES['all'].append(unicode(cls.__name__))
-        CLASSES['trait'].append(unicode(cls.__name__))
-    for cls in [TraitGroup]:
-        CLASSES['index'][cls.__name__] = cls
-        CLASSES['all'].append(unicode(cls.__name__))
-        CLASSES['group'].append(unicode(cls.__name__))
-    for cls in [BasicChoice, LinearChoice, SubChoice]:
-        CLASSES['index'][cls.__name__] = cls
-        CLASSES['all'].append(unicode(cls.__name__))
-        CLASSES['choice'].append(unicode(cls.__name__))
+    CLASSES = {
+        'choice': [BasicTrait, LinearTrait],
+        'group': [TraitGroup],
+        'trait': [BasicTrait, LinearTrait],
+        'all': [],
+        'index': {},
+    }
+
+    # Convert the classes into strings
+    for key in ['choice', 'group', 'trait']:
+        classes = CLASSES[key]
+        CLASSES[key] = []
+        for cls in classes:
+            CLASSES['index'][cls.__name__] = cls
+            CLASSES['all'].append(unicode(cls.__name__))
+            CLASSES[key].append(unicode(cls.__name__))
+    # get rid of any non class variables
+    del classes
+    del key
+    del cls
 
     def __init__(self, indexdir):
         """
