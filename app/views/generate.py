@@ -1,6 +1,4 @@
 from django.views.decorators.http import require_GET
-from django.http import HttpResponse
-import simplejson
 
 from app.constants.index import INDEX_DIR
 from app.errors import PersOARequiredFieldError, PersOANotFound, PersOALeftoverField
@@ -16,6 +14,7 @@ WhooshIndex.get(INDEX_DIR)
 
 seed_field = Field(['seed'],'seed', int).default(None)
 num_field = Field(['num'], 'num', int).default(None)
+
 
 ############################################################
 # Generate Profile
@@ -55,6 +54,7 @@ def profile(request, output=None):
 
     # Format the choice
     output.output(generated)
+
 
 ############################################################
 # Generate Group
