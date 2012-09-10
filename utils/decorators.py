@@ -1,25 +1,8 @@
 """
 Useful decorators
 """
-from django.http import HttpResponse
-
 from functools import wraps
 from utils.seed import Seed
-import simplejson
-
-def json_return(func):
-    """
-    Wraps the returned object in a HttpResponse after a json dump,
-    returning that instead
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        data = func(*args, **kwargs)
-
-        response = HttpResponse(mimetype='application/json')
-        simplejson.dump(data, response)
-        return response
-    return wrapper
 
 def cascade(func):
     """

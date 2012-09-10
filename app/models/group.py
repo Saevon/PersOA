@@ -4,6 +4,7 @@ from django.db import models
 
 from app.constants.database import MAX_CHAR_LENGTH
 from app.models.abstract import AbstractPersOAModel
+from itertools import chain
 from utils.decorators import seeded
 
 class TraitGroup(AbstractPersOAModel):
@@ -35,16 +36,27 @@ class TraitGroup(AbstractPersOAModel):
         """"
         Combines the list of Traits
         """
-        return self.basic_traits + self.linear_traits
+        return chain(self.basic_traits.all(), self.linear_traits.all())
 
     @seeded(2)
-    def generate(self, num=None, seed=None):
+    def generate(self, num=None, seed=None, include=None):
         """
         Returns a choice for each of the groupings traits
         """
-        group = {}
-        for trait in self.traits:
-            group[trait.name] = trait.generate(num, seed)
+        if num is None:
+            num = 1
+
+        groups = []
+
+        for i in range(num):
+            group = {}
+            for trait in self.traits:
+                group[trait.name] = [
+                    i.details(include)
+                    for i in trait.generate(seed=seed)
+                ]
+
+            groups.append(group)
 
         return group
 
@@ -53,8 +65,10 @@ class TraitGroup(AbstractPersOAModel):
         Returns a dict with the choice's details
         """
         details = self.data()
-        if include is not None and 'traits' in include:
-            details.remove('traits')
+
+        if include is None:
+            pass
+        elif include['group_desc']:
             details.update({
                 'traits': [trait.details(include) for trait in self.traits]
             })

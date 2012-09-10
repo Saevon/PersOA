@@ -74,7 +74,7 @@ class BasicChoice(AbstractChoice):
         return self
 
     def details(self, include=None):
-        details = Super(BasicChoice, self).details(include)
+        details = super(BasicChoice, self).details(include)
 
         if include['choice_desc']:
             details['sub'] = [i.details(include) for i in self.sub_choices.all()]
@@ -125,7 +125,7 @@ class SubChoice(AbstractPersOAModel):
         details = self.data()
         if include is None:
             pass
-        elif 'choice_name' in include:
+        elif include['choice_name']:
             return '%(choice)s :: %(name)s' % {
                 'choice': self.choice.name,
                 'name': self.name,

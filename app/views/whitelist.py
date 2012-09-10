@@ -73,7 +73,8 @@ class Whitelist(object):
         """
         return self._errors
 
-    def clear_errors(self):
+    @cascade
+    def clear(self):
         """
         clears any errors that may have occured
         """
@@ -93,7 +94,6 @@ class Whitelist(object):
         try:
             includes = self._whitelist[Whitelist.INCLUDE_NAME].val(params)
         except FieldError:
-            self._final[Whitelist.INCLUDE_NAME] = []
             includes = False
 
         # TODO: Really... the best I can think of is a staircase?

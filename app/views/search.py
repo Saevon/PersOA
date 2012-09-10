@@ -18,6 +18,14 @@ class WhooshIndex(object):
         CLASSES['index'][cls.__name__] = cls
         CLASSES['all'].append(unicode(cls.__name__))
         CLASSES['trait'].append(unicode(cls.__name__))
+    for cls in [TraitGroup]:
+        CLASSES['index'][cls.__name__] = cls
+        CLASSES['all'].append(unicode(cls.__name__))
+        CLASSES['group'].append(unicode(cls.__name__))
+    for cls in [BasicChoice, LinearChoice, SubChoice]:
+        CLASSES['index'][cls.__name__] = cls
+        CLASSES['all'].append(unicode(cls.__name__))
+        CLASSES['choice'].append(unicode(cls.__name__))
 
     def __init__(self, indexdir):
         self._indexdir = indexdir

@@ -1,5 +1,5 @@
 from django.utils import unittest
-from app.views.field import Field
+from app.views.field import Field, FieldError
 
 class TestFields(unittest.TestCase):
 
@@ -80,7 +80,7 @@ class TestFields(unittest.TestCase):
         self.assertEquals(val, '2')
 
     def test_not_found_items(self):
-        with self.assertRaises(KeyError):
+        with self.assertRaises(FieldError):
             params = {'none': '"sample"'}
 
             val = self.field.val(params)
@@ -96,14 +96,16 @@ class TestFields(unittest.TestCase):
         params = {}
 
         # Make sure that exceptions are thrown
-        Fail = type('Fail', (BaseException,), {})
-        self.field.default(Fail())
+        Fail = FieldError
+        self.field.default(Fail)
         with self.assertRaises(Fail):
             val = self.field.val(params)
 
         # make sure that indirect subclasses of BaseException are still thrown
-        Fail2 = type('Fail2', (KeyError,), {})
-        self.field.default(Fail2())
+        class Fail2(FieldError):
+            pass
+
+        self.field.default(Fail2)
         with self.assertRaises(Fail2):
             val = self.field.val(params)
 
@@ -147,7 +149,7 @@ class TestFields(unittest.TestCase):
         self.assertEquals(val, 'allowed item')
 
         params = {'in': '"not allowed"'}
-        with self.assertRaises(KeyError):
+        with self.assertRaises(FieldError):
             val = self.field.val(params)
 
     def test_setting_limit_implicit(self):
@@ -159,7 +161,7 @@ class TestFields(unittest.TestCase):
         self.assertEquals(val, 'allowed item')
 
         params = {'in': '"not allowed"'}
-        with self.assertRaises(KeyError):
+        with self.assertRaises(FieldError):
             val = self.field.val(params)
 
     def test_setting_limit_implicit_chain(self):
@@ -177,7 +179,7 @@ class TestFields(unittest.TestCase):
         self.assertEquals(val, 'other item')
 
         params = {'in': 'not allowed'}
-        with self.assertRaises(KeyError):
+        with self.assertRaises(FieldError):
             val = self.field.val(params)
 
     def test_setting_limit_list(self):
@@ -198,7 +200,7 @@ class TestFields(unittest.TestCase):
         )
 
         params = {'in': '"not allowed"'}
-        with self.assertRaises(KeyError):
+        with self.assertRaises(FieldError):
             val = self.field.val(params)
 
     @unittest.skip("TODO: Fields don't have this behaviour yet")
@@ -231,5 +233,5 @@ class TestFields(unittest.TestCase):
             'in': '["Fail", "More Fail", "fail item"]',
         }
 
-        with self.assertRaises(KeyError):
+        with self.assertRaises(FieldError):
             val = self.field.val(params)

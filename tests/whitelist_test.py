@@ -31,7 +31,7 @@ class TestWhitelist(unittest.TestCase):
 
     def test_include__empty(self):
         out = self.whitelist.process({})
-        self.assertFalse(out.has_key('include'))
+        self.assertTrue(out.has_key('include'))
 
     def test_include__mixed(self):
         (self.whitelist
@@ -74,23 +74,6 @@ class TestWhitelist(unittest.TestCase):
         self.assertFalse(includes.has_key('test2'))
 
         self.assertTrue(len(out) == 0)
-
-    def test_fields(self):
-        (self.whitelist
-            .add(Field(['test'], 'test', int))
-            .add(Field(['other'], 'test2', int))
-            .add(Field(['test3'], 'test3', int))
-        )
-
-        args = {
-            'test': '20',
-            'other': '"12"',
-        }
-
-        out = self.whitelist.process(args)
-
-        self.assertEquals(20, out['test'])
-        self.assertEquals(12, out['test2'])
 
     def test_fields(self):
         (self.whitelist
