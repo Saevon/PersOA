@@ -6,11 +6,10 @@ from django.conf.urls.defaults import include, patterns, url
 from django.contrib import admin
 admin.autodiscover()
 
-from app.urls import details, generate, index
+from app.urls import index
 
-urlpatterns = []
-# perhaps use app.urls? and import all sub modules?
-for module in [index, details, generate]:
-    urlpatterns += module.urlpatterns
-
-urlpatterns += url(r'^admin/', include(admin.site.urls)),
+urlpatterns = patterns('',
+    url(r'^generate', include('app.urls.generate')),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include('app.urls.index')),
+)

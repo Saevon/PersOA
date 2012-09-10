@@ -14,7 +14,7 @@ def about(request):
         'authors': ['Saevon', 'BlastOfWind'],
         'created': 'December 15th 2011',
         'desc': 'An app that is used to generate, view or store roleplaying personalities. Based on AshAmi\'s personality site',
-        'links': [],
+        'links': ['http://rpg.ashami.com/'],
     }
     response = HttpResponse(mimetype='application/json')
     simplejson.dump(out, response)
