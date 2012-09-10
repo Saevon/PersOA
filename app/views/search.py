@@ -149,56 +149,56 @@ class WhooshIndex(object):
         # Choices
         if isinstance(item, BasicChoice):
             data = {
-                'name': item.name,
+                'name': unicode(item.name),
                 'type': u'BasicChoice',
                 'keywords': u'%s choice' % (item.name),
-                'desc': item.desc,
-                'defn': item.defn,
+                'desc': unicode(item.desc),
+                'defn': unicode(item.defn),
             }
         elif isinstance(item, LinearChoice):
             data = {
-                'name': item.name,
+                'name': unicode(item.name),
                 'type': u'LinearChoice',
                 'keywords': u'%s choice' % (item.name),
-                'desc': item.desc,
-                'defn': item.defn,
+                'desc': unicode(item.desc),
+                'defn': unicode(item.defn),
             }
         elif isinstance(item, SubChoice):
             data = {
-                'name': item.name,
+                'name': unicode(item.name),
                 'type': u'SubChoice',
                 'keywords': u'%s %s subchoice choice' %
                     (item.choice.name, item.name),
                 'desc': u'',
-                'defn': item.defn,
+                'defn': unicode(item.defn),
             }
         # Groups
         elif isinstance(item, TraitGroup):
             data = {
-                'name': item.name,
+                'name': unicode(item.name),
                 'type': u'TraitGroup',
                 'keywords': u'%s group' % (item.name),
-                'desc': item.desc,
+                'desc': unicode(item.desc),
                 'defn': u'',
             }
         # Traits
         elif isinstance(item, BasicTrait):
             data = {
-                'name': item.name,
+                'name': unicode(item.name),
                 'type': u'BasicTrait',
                 'keywords': u'%s trait' % (item.name),
-                'desc': item.desc,
+                'desc': unicode(item.desc),
                 'defn': item.defn,
             }
         elif isinstance(item, LinearTrait):
             data = {
-                'name': item.name,
+                'name': unicode(item.name),
                 'type': u'LinearTrait',
                 'keywords': u'%s %s %s trait' % (
                     item.name, item.pos_name, item.neg_name
                 ),
-                'desc': item.desc,
-                'defn': item.defn,
+                'desc': unicode(item.desc),
+                'defn': unicode(item.defn),
             }
         data['id'] = unicode(item.id)
         data['index_id'] = u'%s-%s' % (data['type'], data['id'])
