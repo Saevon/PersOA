@@ -1,3 +1,7 @@
+from django.db import models
+from django.dispatch import receiver
+
+from app.constants.index import INDEX_DIR
 from app.models.choice import BasicChoice, LinearChoice, SubChoice
 from app.models.group import TraitGroup
 from app.models.trait import BasicTrait, LinearTrait
@@ -46,6 +50,8 @@ class WhooshIndex(object):
         from shutil import rmtree
 
         schema = Schema(
+            # Indexing
+            index_id=ID(unique=True),
             # Identification
             id=ID(stored=True),
             type=ID(stored=True),
@@ -84,16 +90,12 @@ class WhooshIndex(object):
             BasicTrait.objects.all(), LinearTrait.objects.all(),
         )
 
+        writer = self.index.writer()
+
         for item in items:
             data = self.index_data(item)
-            self.writer.add_document(**data)
-        self.writer.commit()
-
-    @property
-    def writer(self):
-        if self._writer is None:
-            self._writer = self.index.writer()
-        return self._writer
+            writer.update_document(**data)
+        writer.commit()
 
     def search(self, **kwargs):
         kwargs = defaultdict(unicode, **kwargs)
@@ -127,6 +129,19 @@ class WhooshIndex(object):
                 searcher.search(query, limit=1)
             ]
             return results
+
+    @cascade
+    def refresh_item(self, item):
+        writer = self.index.writer()
+        writer.update_document(**self.index_data(item))
+        writer.commit()
+
+    @cascade
+    def delete_item(self, item):
+        writer = self.index.writer()
+        data = self.index_data(item)
+        writer.delete_by_term(u'index_id', data['index_id'])
+        writer.commit()
 
     def index_data(self, item):
         data = {}
@@ -186,7 +201,17 @@ class WhooshIndex(object):
                 'defn': item.defn,
             }
         data['id'] = unicode(item.id)
+        data['index_id'] = u'%s-%s' % (data['type'], data['id'])
         data['keywords'] = data['keywords'].lower()
 
         return data
 
+@receiver(models.signals.post_save)
+def update_index(sender, instance, **kwargs):
+    if type(instance).__name__ in WhooshIndex.CLASSES['all']:
+        index = WhooshIndex.get(INDEX_DIR).refresh_item(instance)
+
+@receiver(models.signals.post_delete)
+def delete_index(sender, instance, **kwargs):
+    if type(instance).__name__ in WhooshIndex.CLASSES['all']:
+        index = WhooshIndex.get(INDEX_DIR).delete_item(instance)

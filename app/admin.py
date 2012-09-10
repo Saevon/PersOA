@@ -52,6 +52,9 @@ class LinearChoiceAdmin(admin.ModelAdmin):
         (None, {'fields': ['desc', 'side']}),
     ]
 
+class TraitGroupAdmin(admin.ModelAdmin):
+    filter_horizontal = ['linear_traits', 'basic_traits']
+
 admin.site.register(LinearTrait, LinearTraitAdmin)
 admin.site.register(LinearChoice, LinearChoiceAdmin)
 
@@ -59,4 +62,4 @@ admin.site.register(BasicChoice, BasicChoiceAdmin)
 admin.site.register(SubChoice)
 admin.site.register(BasicTrait, BasicTraitAdmin)
 
-admin.site.register(TraitGroup)
+admin.site.register(TraitGroup, TraitGroupAdmin)

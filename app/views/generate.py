@@ -11,6 +11,7 @@ from app.views.search import WhooshIndex
 from app.views.sanitize import json_return, persoa_output
 from itertools import chain
 
+# Do any preparatory work before starting requests
 WhooshIndex.get(INDEX_DIR)
 
 seed_field = Field(['seed'],'seed', int).default(None)
