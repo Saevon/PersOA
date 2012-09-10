@@ -3,12 +3,13 @@ from django.http import HttpResponse
 import simplejson
 
 from app.constants.index import INDEX_DIR
-from app.errors import PersOARequiredFieldError, PersOANotFound
+from app.errors import PersOARequiredFieldError, PersOANotFound, PersOALeftoverField
 from app.models.trait import BasicTrait, LinearTrait
 from app.views.field import Field
 from app.views.whitelist import Whitelist
 from app.views.search import WhooshIndex
 from app.views.sanitize import json_return, persoa_output
+from itertools import chain
 
 WhooshIndex.get(INDEX_DIR)
 
@@ -18,25 +19,41 @@ num_field = Field(['num'], 'num', int).default(None)
 ############################################################
 # Generate Full
 ############################################################
+full_whitelist = (Whitelist()
+    .add(seed_field)
+    .add(num_field.default(1))
+
+    .include(['trait_desc', 'desc', 'details', 'trait'], 'choice_trait')
+    .include(['choice_desc', 'desc', 'details'], 'choice_desc')
+    .include(['choice_name', 'name'], 'choice_name')
+)
+
 @require_GET
-def full(request):
-    args = (Whitelist()
-        .add(Field(['seed'],'seed', int))
-        .add(Field(['num'], 'num', int))
-        .include(['trait_desc', 'desc', 'details'], 'trait_desc')
-        .include(['choice_desc', 'desc', 'details'], 'choice_desc')
-    ).process(request.GET)
+@json_return
+@persoa_output
+def full(request, output=None):
+    whitelist = full_whitelist.clear()
+    # Translate the input
+    args = whitelist.process(request.GET)
 
-    # Find the Group
+    # Check the input for any problems
+    whitelist.leftover(PersOALeftoverField)
+    output.error(whitelist.errors())
 
-    # Generate the group
+    # Generate each trait
+    generated = []
+    for i in range(args['num']):
+        profile = {}
+        traits = chain(BasicTrait.objects.all(), LinearTrait.objects.all())
+        for trait in traits:
+            profile[trait.name] = [
+                i.details(args[Whitelist.INCLUDE_NAME])
+                for i in trait.generate(seed=args['seed'])
+            ]
+        generated.append(profile)
 
-    # Format
-    generated = args
-
-    response = HttpResponse(mimetype='application/json')
-    simplejson.dump(generated, response)
-    return response
+    # Format the choice
+    output.output(generated)
 
 ############################################################
 # Generate Group
@@ -62,6 +79,7 @@ def group(request, output=None):
     args = whitelist.process(request.GET)
 
     # Check the input for any problems
+    whitelist.leftover(PersOALeftoverField)
     output.error(whitelist.errors())
 
     # Find the Group
@@ -96,6 +114,7 @@ trait_whitelist = (Whitelist()
     .add(Field(['trait_name', 'trait', 'name'],'trait_name', basestring).default(PersOARequiredFieldError))
     .add(seed_field)
     .add(num_field)
+
     .include(['trait_desc', 'desc', 'details', 'trait'], 'choice_trait')
     .include(['choice_desc', 'desc', 'details'], 'choice_desc')
     .include(['choice_name', 'name'], 'choice_name')
@@ -109,7 +128,8 @@ def trait(request, output=None):
     # Translate the input
     args = whitelist.process(request.GET)
 
-    # Check the input for any problems
+    # Check the input for anyproblems
+    whitelist.leftover(PersOALeftoverField)
     output.error(whitelist.errors())
 
     # Find the Trait
@@ -130,7 +150,7 @@ def trait(request, output=None):
         output.error(PersOANotFound())
 
     # Generate a choice
-    generated = trait.generate(args['num'], args['seed'])
+    generated = trait.generate(num=args['num'], seed=args['seed'])
     # Format the choice
     output.output(
         [i.details(args[Whitelist.INCLUDE_NAME])

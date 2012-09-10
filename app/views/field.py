@@ -19,6 +19,7 @@ class Field(object):
     # If you combine both then all items in the list must be part of the choices
     SETTINGS_LIST = 'list'
     SETTINGS_LIMIT = 'limit'
+    SETTINGS_NO_POP = 'no_pop'
 
     def __init__(self, keys, name, cls=basestring):
         """
@@ -35,6 +36,7 @@ class Field(object):
         self._default = FieldError
         self._validators = []
         self._type = cls
+        self._used = None
 
     @staticmethod
     def type_checker(cls):
@@ -100,6 +102,13 @@ class Field(object):
         """
         return self._name
 
+    def used_key(self):
+        """
+        Returns the key that was used when the field last got data
+            Note: If no data was found, then None is returned
+        """
+        return self._used
+
     def val(self, params):
         """
         Calculates the value of the field from the dict params
@@ -112,6 +121,7 @@ class Field(object):
         Tries to find the first valid field in params that fits the set criteria.
         returns/raises the default value if none was found
         """
+        self._used = None
         for key in self._keys:
             val = params.get(key)
             if val is None:
@@ -138,6 +148,7 @@ class Field(object):
                     if not valid:
                         break
                 if valid:
+                    self._used = key
                     return val
             else:
                 valid = True
@@ -147,6 +158,7 @@ class Field(object):
                     except TypeError:
                         valid = False
                 if valid and self._validate_val(val):
+                    self._used = key
                     return val
 
         # Since nothing was found the default applies

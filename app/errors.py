@@ -6,6 +6,15 @@ class PersOAError(Exception):
 class PersOAWarning(PersOAError, Warning):
     ERR_CODE = 9900
 
+class PersOALeftoverField(PersOAWarning):
+    ERR_CODE = 9901
+    def __init__(self, name):
+        self.name = name
+    def __str__(self):
+        return 'This argument was passed in but not used: %s' % (
+            self.name
+        )
+
 class PersOAEarlyFinish(PersOAError):
     pass
     

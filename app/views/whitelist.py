@@ -18,7 +18,7 @@ class Whitelist(object):
         }
         self._includes = {}
         self._include_names = {}
-        self._errors = []
+        self.clear()
 
     @cascade
     @allow_list(1, 'field')
@@ -74,11 +74,20 @@ class Whitelist(object):
         return self._errors
 
     @cascade
+    def leftover(self, Err):
+        """
+        Adds any unused params to errors if type Err
+        """
+        for key in self._left:
+            self.error(Err(key))
+
+    @cascade
     def clear(self):
         """
         clears any errors that may have occured
         """
         self._errors = []
+        self._left = []
 
     def process(self, params):
         """
@@ -90,9 +99,13 @@ class Whitelist(object):
         self._fields = set(self._whitelist.keys())
         self._fields.remove(Whitelist.INCLUDE_NAME)
 
+        # Get the list of all keys, to subtract those that get used
+        self._left = params.keys()
+
         # Find what is included
         try:
             includes = self._whitelist[Whitelist.INCLUDE_NAME].val(params)
+            self._left.remove(self._whitelist[Whitelist.INCLUDE_NAME].used_key())
         except FieldError:
             includes = False
 
@@ -118,5 +131,7 @@ class Whitelist(object):
             try:
                 valid = self._whitelist[name].val(params)
                 self._final[field.get_name()] = valid
+                if not field.used_key() is None:
+                    self._left.remove(field.used_key())
             except FieldError, err:
                 self.error(err)
