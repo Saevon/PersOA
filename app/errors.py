@@ -17,7 +17,7 @@ class PersOALeftoverField(PersOAWarning):
 
 class PersOAEarlyFinish(PersOAError):
     pass
-    
+
 class PersOANotFound(PersOAError):
     ERR_CODE = 9001
     def __str__(self):

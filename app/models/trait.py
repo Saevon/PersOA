@@ -29,15 +29,19 @@ class AbstractTrait(AbstractPersOAModel):
         Returns a dict with the trait's details
         """
         details = self.data()
-        if include is not None:
-            if 'choices' in include:
-                details.update({
-                    'choices': [choice.data() for choice in self.choices],
-                })
-            if 'groups' in include:
-                details.update({
-                    'groups': [group.data() for group in self.groups],
-                })
+        if include is None:
+            return details
+        elif include['trait_name']:
+            return self.name
+
+        if include['choice']:
+            details.update({
+                'choices': [choice.details(include) for choice in self.choices.all()],
+            })
+        if include['group']:
+            details.update({
+                'groups': [group.details(include) for group in self.groups.all()],
+            })
         return details
 
     def data(self):

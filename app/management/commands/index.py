@@ -12,7 +12,7 @@ class Command(BaseCommand):
         make_option('--flush',
             action='store_true',
             dest='flush',
-            default=True,
+            default=False,
             help='Remake the index from scratch'
         ),
     )

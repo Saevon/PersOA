@@ -76,7 +76,9 @@ class BasicChoice(AbstractChoice):
     def details(self, include=None):
         details = super(BasicChoice, self).details(include)
 
-        if include['choice_desc']:
+        if include is None:
+            return details
+        elif include['choice_desc']:
             details['sub'] = [i.details(include) for i in self.sub_choices.all()]
         return details
 

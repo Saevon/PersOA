@@ -68,6 +68,8 @@ class TraitGroup(AbstractPersOAModel):
 
         if include is None:
             pass
+        elif include['group_name']:
+            return self.name
         elif include['group_desc']:
             details.update({
                 'traits': [trait.details(include) for trait in self.traits]
