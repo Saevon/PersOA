@@ -33,6 +33,7 @@ class AbstractTrait(AbstractPersOAModel):
             return details
         elif include['trait_name']:
             return self.name
+        include['trait'] = False
 
         if include['choice']:
             details.update({

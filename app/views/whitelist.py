@@ -17,7 +17,7 @@ class Whitelist(object):
             ),
         }
         self._includes = {}
-        self._include_names = {}
+        self._include_names = defaultdict(lambda: False)
         self.clear()
 
     @cascade

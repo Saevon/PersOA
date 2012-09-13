@@ -23,9 +23,10 @@ profile_whitelist = (Whitelist()
     .add(seed_field)
     .add(num_field.default(1))
 
-    .include(['trait_desc', 'desc', 'details', 'trait'], 'choice_trait')
-    .include(['choice_desc', 'desc', 'details'], 'choice_desc')
+    .include(['trait', 'desc', 'details'], 'trait')
+    .include(['trait_name', 'name'], 'trait_name')
     .include(['choice_name', 'name'], 'choice_name')
+    .include(['choice_desc', 'desc', 'details'], 'choice_desc')
 )
 
 @require_GET
@@ -65,10 +66,12 @@ group_whitelist = (Whitelist()
     .add(seed_field)
     .add(num_field)
 
-    .include(['group_desc', 'desc', 'details'], 'group_desc')
-    .include(['trait_desc', 'desc', 'details', 'trait'], 'choice_trait')
-    .include(['choice_desc', 'desc', 'details'], 'choice_desc')
+    .include(['group', 'group_name'], 'group')
+    .include(['group_name', 'name'], 'group_name')
+    .include(['trait'], 'trait')
+    .include(['trait_name', 'name'], 'trait_name')
     .include(['choice_name', 'name'], 'choice_name')
+    .include(['choice_desc', 'desc', 'details'], 'choice_desc')
 )
 
 @require_GET
@@ -91,7 +94,7 @@ def group(request, output=None):
         type=WhooshIndex.CLASSES['group']
     )
     if len(results):
-        cls = WhooshIndex.CLASSES['index'][results[0]['type']]
+        cls = WhooshIndex.CLASSES['index'][results['results'][0]['type']]
 
         group = (cls.objects
             .select_related()
@@ -101,11 +104,16 @@ def group(request, output=None):
         output.error(PersOANotFound())
 
     # Generate a choice
-    output.output(group.generate(
-        args['num'],
-        args['seed'],
-        args[Whitelist.INCLUDE_NAME]
-    ))
+    include = args[Whitelist.INCLUDE_NAME]
+    generated = {
+        'choices': group.generate(
+            args['num'],
+            args['seed'],
+            include
+    )}
+    if include['group']:
+        generated['group'] = group.details(include)
+    output.output(generated)
 
 
 ############################################################
@@ -116,9 +124,10 @@ trait_whitelist = (Whitelist()
     .add(seed_field)
     .add(num_field)
 
-    .include(['trait_desc', 'desc', 'details', 'trait'], 'choice_trait')
     .include(['choice_desc', 'desc', 'details'], 'choice_desc')
     .include(['choice_name', 'name'], 'choice_name')
+    .include(['trait', 'trait_name'], 'trait')
+    .include(['trait_name', 'name'], 'trait_name')
 )
 
 @require_GET
@@ -151,9 +160,14 @@ def trait(request, output=None):
         output.error(PersOANotFound())
 
     # Generate a choice
-    generated = trait.generate(num=args['num'], seed=args['seed'])
+    include = args[Whitelist.INCLUDE_NAME]
+    generated = {
+        'choices': [
+            i.details(include)
+            for i in trait.generate(num=args['num'], seed=args['seed'])
+        ],
+    }
+    if include['trait']:
+        generated['trait'] = trait.details(include)
     # Format the choice
-    output.output(
-        [i.details(args[Whitelist.INCLUDE_NAME])
-        for i in generated]
-    )
+    output.output(generated)

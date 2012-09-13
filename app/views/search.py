@@ -159,10 +159,17 @@ class WhooshIndex(object):
                 )
 
             print query
-            results = [hit.fields() for hit in
-                searcher.search(query, limit=1)
-            ]
-            return results
+
+            page = searcher.search_page(
+                query,
+                kwargs['page'], kwargs['pagelen']
+            )
+            return {
+                'pages': page.pagecount,
+                'page': page.pagenum,
+                'total': page.total,
+                'results': [hit.fields() for hit in page.results]
+            }
 
     @cascade
     def refresh_item(self, item):

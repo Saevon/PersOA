@@ -38,9 +38,10 @@ class AbstractChoice(AbstractPersOAModel):
             return details
         elif include['choice_name']:
             return self.name
+        include['choice'] = False
 
-        if include['choice_trait']:
-            details['trait'] = self.trait.data()
+        if include['trait']:
+            details['trait'] = self.trait.details(include)
         return details
 
     def data(self):

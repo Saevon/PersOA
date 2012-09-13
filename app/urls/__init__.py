@@ -7,8 +7,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^generate/', include('app.urls.generate')),
-    url(r'^find/', include('app.urls.find')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^generate/', include('app.urls.generate')),
+    url(r'^find/', 'app.views.find.find'),
     url(r'^', include('app.urls.index')),
 )
