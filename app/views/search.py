@@ -138,13 +138,13 @@ class WhooshIndex(object):
                 .parse(unicode(kwargs.get('query', u'').lower()))
             )
 
-            if len(kwargs['name']):
+            if not kwargs['name'] is None:
                 query = (query & QueryParser(u'name', self.index.schema)
                     .parse(" ".join([
                         unicode(i) for i in kwargs['name']
                     ]))
                 )
-            if len(kwargs['desc']):
+            if not kwargs['desc'] is None:
                 query = (query
                     & MultifieldParser([u'desc', u'defn'], self.index.schema)
                         .parse(" ".join([
@@ -152,7 +152,7 @@ class WhooshIndex(object):
                         ]))
                 )
 
-            if kwargs['type']:
+            if not kwargs['type'] is None:
                 query = (
                     QueryParser(u'type', self.index.schema, group=OrGroup).parse(" ".join(kwargs['type']))
                     & query
@@ -162,7 +162,7 @@ class WhooshIndex(object):
 
             page = searcher.search_page(
                 query,
-                kwargs['page'], kwargs['pagelen']
+                kwargs.get('page', 1), pagelen=kwargs.get('pagelen', 10)
             )
             return {
                 'pages': page.pagecount,

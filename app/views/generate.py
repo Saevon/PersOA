@@ -91,14 +91,16 @@ def group(request, output=None):
 
     results = WhooshIndex.get(INDEX_DIR).search(
         name=[args['group_name']],
-        type=WhooshIndex.CLASSES['group']
+        type=WhooshIndex.CLASSES['group'],
+        page=1,
+        pagelen=1
     )
     if len(results):
         cls = WhooshIndex.CLASSES['index'][results['results'][0]['type']]
 
         group = (cls.objects
             .select_related()
-            .get(id=results[0]['id'])
+            .get(id=results['results'][0]['id'])
         )
     else:
         output.error(PersOANotFound())
@@ -147,14 +149,16 @@ def trait(request, output=None):
 
     results = WhooshIndex.get(INDEX_DIR).search(
         name=[args['trait_name']],
-        type=WhooshIndex.CLASSES['trait']
+        type=WhooshIndex.CLASSES['trait'],
+        page=1,
+        pagelen=1
     )
     if len(results):
         cls = WhooshIndex.CLASSES['index'][results[0]['type']]
 
         trait = (cls.objects
             .select_related()
-            .get(id=results[0]['id'])
+            .get(id=results['results'][0]['id'])
         )
     else:
         output.error(PersOANotFound())
