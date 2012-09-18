@@ -45,7 +45,7 @@ DATABASES = {
         #'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'ENGINE': 'django.db.backends.sqlite3',
         # Or path to database file if using sqlite3.
-        'NAME': personalize(DB_NAME='pearsoa.db'),
+        'NAME': personalize(release=DEBUG, DB_NAME='pearsoa.db'),
         # Not used with sqlite3.
         'USER': '',
         # Not used with sqlite3.# Not used with sqlite3.
