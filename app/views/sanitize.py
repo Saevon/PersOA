@@ -89,7 +89,7 @@ def persoa_output(func):
         out = PersOAOutput()
         kwargs['output'] = out
         try:
-            data = func(*args, **kwargs)
+            func(*args, **kwargs)
         except PersOAEarlyFinish:
             pass
         return out.sanitize()

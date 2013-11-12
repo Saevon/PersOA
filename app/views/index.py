@@ -1,18 +1,16 @@
 from django.views.decorators.http import require_GET
-from django.http import HttpResponse
 
 from app.constants import VERSION
 from app.views.sanitize import json_return, persoa_output
-import simplejson
 
 @require_GET
 @json_return
 @persoa_output
 def index(request, output=None):
-	out = {
-		'desc': 'Welcome to PersOA, an app dedicated to working with personalities.',
-	}
-	output.output(out)
+    out = {
+        'desc': 'Welcome to PersOA, an app dedicated to working with personalities.',
+    }
+    output.output(out)
 
 @require_GET
 @json_return
