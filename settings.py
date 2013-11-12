@@ -8,7 +8,7 @@ import os.path
 if os.path.exists('personal.py'):
     from personal import personalize
 else:
-    def personalize(*kwargs):
+    def personalize(**kwargs):
         return False
 
 
