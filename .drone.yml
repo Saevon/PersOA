@@ -1,5 +1,6 @@
-image: python
-script:
- - pip install -r requirements.txt
- - make test
- - echo "Build has been completed."
+build:
+  image: python
+  commands:
+    - pip install -r requirements.txt
+    - make test
+    - echo "Build has been completed."
