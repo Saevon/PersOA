@@ -13,6 +13,6 @@ build:
     - function error_exit { exit 1 }
     
 compose:
-  database
+  database:
     image: mongo
 
