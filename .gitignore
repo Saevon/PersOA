@@ -1,5 +1,9 @@
 *.pyc
+
 env/
 index/
 persoa.db
 personal.py
+
+
+.coverage

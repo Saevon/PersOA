@@ -4,7 +4,14 @@ python:
 
 # command to install dependencies
 install:
+  - echo
   - pip install -r requirements.txt
+  - pip install coverage
+  - pip install codecov
+
 # command to run tests
 script:
-  - make test
+  - make coverage
+
+after_script:
+  - codecov

@@ -12,6 +12,8 @@ TEST=python $(TEST_FLAGS) manage.py test
 help:
 	@echo "Testing:"
 	@echo "    test >> Run the full test suite"
+	@echo "Running"
+	@echo "    use manage.py"
 
 #
 # Testing
@@ -20,3 +22,6 @@ help:
 
 test:
 	$(TEST)
+
+coverage:
+	coverage run --source='.' manage.py test
