@@ -205,12 +205,33 @@ class TestFields(unittest.TestCase):
         with self.assertRaises(FieldError):
             val = self.field.val(params)
 
-    @unittest.skip("TODO: Fields don't have this behaviour yet")
-    def test_setting_limit_list__filtered_items(self):
+    def test_setting_limit_list__empty(self):
         (self.field.choice('allowed item')
             .choice('other item')
             .choice('final item')
             .setting(Field.SETTINGS_LIST)
+        )
+
+        params = {
+            'in': '[]',
+        }
+
+        val = self.field.val(params)
+        self.assertItemsEqual(
+            val,
+            []
+        )
+
+
+    def test_setting_limit_list__filtered_items(self):
+        '''
+        Sometimes you want to filter out values that are invalid, but allow the rest
+        '''
+        (self.field.choice('allowed item')
+            .choice('other item')
+            .choice('final item')
+            .setting(Field.SETTINGS_LIST)
+            .setting(Field.SETTINGS_LIST_FILTERED)
         )
 
         params = {
@@ -220,15 +241,34 @@ class TestFields(unittest.TestCase):
         val = self.field.val(params)
         self.assertItemsEqual(
             val,
-            ['other item', 'final item', 'other item', 'allowed item']
+            ['other item', 'final item'],
         )
 
-    @unittest.skip("TODO: Fields don't have this behaviour yet")
     def test_setting_limit_list__filtered_items__none_pass(self):
         (self.field.choice('allowed item')
             .choice('other item')
             .choice('final item')
             .setting(Field.SETTINGS_LIST)
+            .setting(Field.SETTINGS_LIST_FILTERED)
+        )
+
+        params = {
+            'in': '["Fail", "More Fail", "fail item"]',
+        }
+        val = self.field.val(params)
+        self.assertItemsEqual(
+            val,
+            []
+        )
+
+
+    def test_setting_limit_list__filtered_items__non_empty(self):
+        (self.field.choice('allowed item')
+            .choice('other item')
+            .choice('final item')
+            .setting(Field.SETTINGS_LIST)
+            .setting(Field.SETTINGS_LIST_FILTERED)
+            .setting(Field.SETTINGS_LIST_NON_EMPTY)
         )
 
         params = {
@@ -237,3 +277,4 @@ class TestFields(unittest.TestCase):
 
         with self.assertRaises(FieldError):
             val = self.field.val(params)
+

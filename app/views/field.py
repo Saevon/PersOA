@@ -18,6 +18,9 @@ class Field(object):
     # Special settings for a field
     # If you combine both then all items in the list must be part of the choices
     SETTINGS_LIST = 'list'
+    SETTINGS_LIST_FILTERED = 'filtered_list'
+    SETTINGS_LIST_NON_EMPTY = 'non_empty'
+
     SETTINGS_LIMIT = 'limit'
     SETTINGS_NO_POP = 'no_pop'
 
@@ -44,7 +47,7 @@ class Field(object):
         Returns a comparison function
         """
         cache_key = cls
-        if not Field.__type_checkers.has_key(cache_key):
+        if cache_key not in Field.__type_checkers:
             Field.__type_checkers[cache_key] = lambda val: isinstance(val, cls)
         return Field.__type_checkers[cache_key]
 
@@ -83,7 +86,7 @@ class Field(object):
     @allow_list(1, 'key')
     def key(self, key):
         """
-        Adds a new input field to read from
+        Adds a new input field[s] to read from
         """
         self._keys.add(key)
 
@@ -135,21 +138,30 @@ class Field(object):
             if Field.SETTINGS_LIST in self._settings:
                 # Check every single value for validity
                 valid = True
+
+                result = []
                 for index in range(len(val)):
                     value = val[index]
+
                     if not Field.type_checker(self._type)(value):
                         try:
                             val[index] = self._type(value)
                         except TypeError:
                             valid = False
-                            break
+                            continue
                     valid = self._validate_val(value) and valid
-                    # optimize by breaking out at first False
-                    if not valid:
+
+                    if valid:
+                        result.append(value)
+                    elif not Field.SETTINGS_LIST_FILTERED in self._settings:
+                        # Break out early in case we're failing as the default
                         break
-                if valid:
+
+                if valid or Field.SETTINGS_LIST_FILTERED in self._settings:
+                    if not len(result) and Field.SETTINGS_LIST_NON_EMPTY in self._settings:
+                        break
                     self._used = key
-                    return val
+                    return result
             else:
                 valid = True
                 if not Field.type_checker(self._type)(val):
@@ -164,7 +176,11 @@ class Field(object):
         # Since nothing was found the default applies
         if (type(self._default) == type(FieldError) and
                 issubclass(self._default, FieldError)):
-            raise self._default(self._name, self._keys)
+            raise self._default({
+                "name": self._name,
+                "keys": self._keys,
+                "input": params,
+            })
         return self._default
 
     def _validate_val(self, val):
