@@ -10,16 +10,14 @@ build:
   commands:
     - pip install pymongo
     - python mongo.py
-    
-services:
-    - mongodb
+    - find -type d -printf '%d\t%P\n' | sort -r -nk1 | cut -f2-
 
 build:
   image: python:3.5
   commands:
     - echo "Build has been completed."
     
-#compose:
-#  database:
-#    image: mongo
+compose:
+  database:
+    image: mongo
 
