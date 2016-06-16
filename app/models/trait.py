@@ -99,7 +99,7 @@ class BasicTrait(AbstractTrait):
             choices.append(choice.generate(seed))
 
         return choices
-        
+
 
 class LinearTrait(AbstractTrait):
     """

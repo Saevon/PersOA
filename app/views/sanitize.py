@@ -15,7 +15,7 @@ def json_return(func):
     def wrapper(*args, **kwargs):
         data = func(*args, **kwargs)
 
-        response = HttpResponse(mimetype='application/json')
+        response = HttpResponse(content_type='application/json')
         simplejson.dump(data, response)
         return response
     return wrapper

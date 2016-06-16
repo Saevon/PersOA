@@ -1,7 +1,9 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns('app.views.generate',
-    url(r'^profile', 'profile'),
-    url(r'^group', 'group'),
-    url(r'^trait', 'trait'),
-)
+from app.views import generate
+
+urlpatterns = [
+    url(r'^profile', generate.profile),
+    url(r'^group', generate.group),
+    url(r'^trait', generate.trait),
+]

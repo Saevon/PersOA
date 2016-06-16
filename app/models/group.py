@@ -1,5 +1,3 @@
-from django.contrib.contenttypes import generic
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from app.constants.database import MAX_CHAR_LENGTH
@@ -20,13 +18,13 @@ class TraitGroup(AbstractPersOAModel):
     basic_traits = models.ManyToManyField(
         'BasicTrait',
         related_name='groups',
-        blank=True,
-        null=True)
+        blank=True
+    )
     linear_traits = models.ManyToManyField(
         'LinearTrait',
         related_name='groups',
         blank=True,
-        null=True)
+    )
 
     def __unicode__(self):
         return unicode(self.name)

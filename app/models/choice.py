@@ -60,6 +60,7 @@ class BasicChoice(AbstractChoice):
     """
     trait = models.ForeignKey(
         'BasicTrait',
+        on_delete=models.CASCADE,
         related_name='choices',
         blank=False,
         null=False)
@@ -91,6 +92,7 @@ class LinearChoice(AbstractChoice):
     side = models.SmallIntegerField(blank=False, null=False)
     trait = models.ForeignKey(
         'LinearTrait',
+        on_delete=models.CASCADE,
         related_name='choices',
         blank=False,
         null=False)
@@ -117,6 +119,7 @@ class SubChoice(AbstractPersOAModel):
         blank=True)
     choice = models.ForeignKey(
         'BasicChoice',
+        on_delete=models.CASCADE,
         related_name='sub_choices',
         blank=False,
         null=False)

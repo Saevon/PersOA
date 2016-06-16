@@ -36,7 +36,7 @@ def seeded(pos):
             if len(args) > pos:
                 args = list(args)
                 args[pos] = valid(args[pos])
-            elif kwargs.has_key('seed'):
+            elif 'seed' in kwargs:
                 kwargs['seed'] = valid(kwargs['seed'])
             else:
                 kwargs['seed'] = Seed()
@@ -60,7 +60,7 @@ def allow_list(pos, name=None):
                 args = list(args)
                 source = args
                 key = pos
-            elif name is not None and kwargs.has_key(name):
+            elif name is not None and name in kwargs:
                 source = kwargs
                 key = name
             else:
