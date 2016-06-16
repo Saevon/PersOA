@@ -4,8 +4,15 @@ build:
     - pip install -r requirements.txt
     - make test
     - echo "Build has been completed."
+    - python mongo.py
 
 build:
   image: python:3.5
   commands:
     - echo "Build has been completed."
+    - function error_exit { exit 1 }
+    
+compose:
+  database
+    image: mongo
+
