@@ -8,7 +8,7 @@
 build:
   image: python:2.7
   commands:
-    - cp -af /drone/site-packages /usr/local/lib/python2.7/ 2>/dev/null || :
+    - "cp -af /drone/site-packages /usr/local/lib/python2.7/ 2>/dev/null || :"
     - rm -rf /drone/site-packages
 
     - pip install pymongo
