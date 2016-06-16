@@ -12,8 +12,7 @@ build:
     - python mongo.py
     
 services:
-  database:
-    image: mongodb
+    - mongodb
 
 build:
   image: python:3.5
