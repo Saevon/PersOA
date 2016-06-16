@@ -9,6 +9,8 @@ db.people.insert_one({
     'title': 'Producer',
 })
 
-cursor = db.restaurants.find()
+cursor = db.people.find()
 for document in cursor:
-    print(document)
+    print document
+
+print "done"
