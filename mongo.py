@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 URI = "mongodb://database:27019"
-client = MongoClient(URI)
+client = MongoClient()
 
 db = client.test
 db.people.insert_one({
