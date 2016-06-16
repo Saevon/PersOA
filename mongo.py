@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-URI = "mongodb://127.0.0.1:27019"
+URI = "mongodb://database:27019"
 client = MongoClient(URI)
 
 db = client.test
