@@ -10,13 +10,17 @@ build:
   commands:
     - pip install pymongo
     - python mongo.py
+    
+services:
+  database:
+    image: mongodb
 
 build:
   image: python:3.5
   commands:
     - echo "Build has been completed."
     
-compose:
-  database:
-    image: mongo
+#compose:
+#  database:
+#    image: mongo
 
