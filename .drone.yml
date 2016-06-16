@@ -15,7 +15,7 @@ build:
     - python mongo.py
     - find / -name "*mongo*" -print
     
-    - cp -a /usr/local/lib/python2.7/ /drone
+    - cp -a /usr/local/lib/python2.7/site-packages /drone/
 
 
 cache:
