@@ -1,7 +1,8 @@
 
 # Make sure to show deprecation warnings
 TEST_FLAGS=-Wall
-TEST=python $(TEST_FLAGS) manage.py test
+TEST_CMD=manage.py test --pattern=*_test.py
+TEST=python $(TEST_FLAGS) $(TEST_CMD)
 
 
 #
@@ -24,4 +25,4 @@ test:
 	$(TEST)
 
 coverage:
-	coverage run --source='.' manage.py test
+	coverage run --source='.' $(TEST_CMD)

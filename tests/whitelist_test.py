@@ -1,7 +1,7 @@
-from django.utils import unittest
-
 from app.views.field import Field
 from app.views.whitelist import Whitelist
+
+import unittest
 
 class TestWhitelist(unittest.TestCase):
 

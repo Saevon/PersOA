@@ -1,5 +1,7 @@
-from django.utils import unittest
 from app.views.field import Field, FieldError
+
+import unittest
+
 
 class TestFields(unittest.TestCase):
 
