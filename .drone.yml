@@ -4,6 +4,10 @@ build:
     - pip install -r requirements.txt
     - make test
     - echo "Build has been completed."
+    
+build:
+  image: python:2.7
+    - pip install pymongo
     - python mongo.py
 
 build:
